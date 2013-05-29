@@ -8,6 +8,7 @@ public class AIPlayer extends Player {
      * @return the piece
      */
     public Piece getPiece() {
+	//TODO Implementierung
 	return piece;
     }
 

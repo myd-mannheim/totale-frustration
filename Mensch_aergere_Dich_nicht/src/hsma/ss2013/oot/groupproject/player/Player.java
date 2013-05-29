@@ -7,10 +7,13 @@ public abstract class Player {
     private Piece[] outArea;
 
     public int dice() {
+	//TODO Implementierung
 	return 0;
     }
 
     public void putPice(Piece piece) {
+	//TODO Implementierung
+
     }
 
     public String getName() {
