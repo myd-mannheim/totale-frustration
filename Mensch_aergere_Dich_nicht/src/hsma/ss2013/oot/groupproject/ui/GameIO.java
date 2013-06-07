@@ -25,7 +25,8 @@ public class GameIO {
 		Field curF = field[i][0];
 
 		if (curF.isEmpty()) {
-		    System.out.printf("[ %d ]", curF.index);
+		    //System.out.printf("[ %d ]", curF.index);
+			System.out.printf("[ %d ]", curF.getIndex());
 		} else {
 		    ArrayList<Token> both = curF.getToken();
 
@@ -45,7 +46,8 @@ public class GameIO {
 	    for (int j = 1; j < 5; j++) {
 		System.out
 			.print("                                                      ");
-		System.out.printf("| %s |", field[row - 1][j].index);
+		//System.out.printf("| %s |", field[row - 1][j].index);
+		System.out.printf("| %s |", field[row - 1][j].getIndex());
 
 		System.out.println();
 	    }
@@ -56,7 +58,8 @@ public class GameIO {
     }
 
     public static void drawHomes(Board board) {
-	Player[] players = board.players;
+	//Player[] players = board.players;
+    Player[] players = board.getPlayers();
 	System.out.println("Spieler Häuser:");
 
 	for (int i = 0; i < players.length; i++) {

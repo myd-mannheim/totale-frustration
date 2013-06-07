@@ -1,6 +1,7 @@
 package hsma.ss2013.oot.groupproject.board;
 
-import game.Player;
+import hsma.ss2013.oot.groupproject.player.Player;
+
 
 public class Token {
 	protected int position;

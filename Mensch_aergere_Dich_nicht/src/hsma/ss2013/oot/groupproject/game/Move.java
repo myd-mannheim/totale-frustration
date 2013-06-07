@@ -1,8 +1,8 @@
 package hsma.ss2013.oot.groupproject.game;
 
-import game.MoveType;
-import game.Player;
+
 import hsma.ss2013.oot.groupproject.board.Token;
+import hsma.ss2013.oot.groupproject.player.Player;
 
 public class Move {
 	protected Player owner;

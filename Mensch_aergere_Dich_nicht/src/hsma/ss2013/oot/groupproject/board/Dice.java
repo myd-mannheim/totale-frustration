@@ -12,7 +12,7 @@ public class Dice {
 		return dice;
 	}
 
-	protected int roll() {
+	public int roll() {
 		return (int) (Math.random() * (sides)) + 1;
 	}
 

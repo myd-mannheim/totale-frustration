@@ -1,10 +1,10 @@
 package hsma.ss2013.oot.groupproject.game;
 
-import game.GameIO;
-import game.Move;
-import game.Player;
+
 import hsma.ss2013.oot.groupproject.board.Board;
 import hsma.ss2013.oot.groupproject.board.Dice;
+import hsma.ss2013.oot.groupproject.player.Player;
+import hsma.ss2013.oot.groupproject.ui.GameIO;
 
 import java.util.ArrayList;
 
@@ -32,8 +32,7 @@ public class GameProcess {
 					System.out.println("Sie haben eine: " + diceRoll
 							+ " gewürfelt!");
 
-					ArrayList<Move> pMoves = GameRules.getInstance()
-							.possibleMoves(diceRoll, player, board);
+					ArrayList<Move> pMoves = GameRules.getInstance().possibleMoves(diceRoll, player, board);
 					if (pMoves.size() != 0) {
 						Move chosenMove = player.chooseMove(pMoves);
 						board.moveToken(chosenMove, diceRoll);

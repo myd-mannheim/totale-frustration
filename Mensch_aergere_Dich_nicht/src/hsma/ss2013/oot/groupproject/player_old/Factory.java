@@ -9,8 +9,8 @@ public class Factory {
     //Singleton
     static Factory factory = new Factory();
 
-    public static MainMenu createGame(){
-	return new Game();
-    }
+    //public static MainMenu createGame(){
+	//return new Game();
+   // }
     
 }

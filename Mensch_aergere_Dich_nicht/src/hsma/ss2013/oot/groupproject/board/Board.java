@@ -8,7 +8,7 @@ import hsma.ss2013.oot.groupproject.player.Player;
 import java.util.ArrayList;
 
 public class Board {
-	Field[][] field;
+	public Field[][] field;
 	Player[] players;
 
 	public Board(Player[] players) {

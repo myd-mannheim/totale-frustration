@@ -1,6 +1,6 @@
 package hsma.ss2013.oot.groupproject.player_old;
 
-public class AIPlayer extends Player {
+public class AIPlayer {
 
     private Piece piece;
 

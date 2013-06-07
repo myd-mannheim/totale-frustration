@@ -1,11 +1,10 @@
 package hsma.ss2013.oot.groupproject.game;
 
-import game.Field;
-import game.Move;
-import game.MoveType;
-import game.Player;
+
 import hsma.ss2013.oot.groupproject.board.Board;
+import hsma.ss2013.oot.groupproject.board.Field;
 import hsma.ss2013.oot.groupproject.board.Token;
+import hsma.ss2013.oot.groupproject.player.Player;
 
 import java.util.ArrayList;
 
@@ -76,7 +75,8 @@ public class GameRules {
 	}
 
 	private boolean isStartBlocked(Player player, Board board) {
-		Field startField = board.getField(player.startpoint);
+		//Field startField = board.getField(player.startpoint);
+		Field startField = board.getField(player.getStartpoint());
 		if (startField.isBarrier()) {
 			return true;
 		} else if (startField.getToken().size() == 0) {
