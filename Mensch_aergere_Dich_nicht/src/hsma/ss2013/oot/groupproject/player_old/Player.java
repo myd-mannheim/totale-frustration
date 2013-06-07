@@ -1,4 +1,4 @@
-package hsma.ss2013.oot.groupproject.player;
+package hsma.ss2013.oot.groupproject.player_old;
 
 public abstract class Player {
 
