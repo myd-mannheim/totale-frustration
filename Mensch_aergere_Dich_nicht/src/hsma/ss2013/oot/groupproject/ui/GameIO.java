@@ -10,8 +10,6 @@ import hsma.ss2013.oot.groupproject.player.Player;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
-
 public class GameIO {
 
     public static void update(Board board) {
@@ -25,8 +23,8 @@ public class GameIO {
 		Field curF = field[i][0];
 
 		if (curF.isEmpty()) {
-		    //System.out.printf("[ %d ]", curF.index);
-			System.out.printf("[ %d ]", curF.getIndex());
+		    // System.out.printf("[ %d ]", curF.index);
+		    System.out.printf("[ %d ]", curF.getIndex());
 		} else {
 		    ArrayList<Token> both = curF.getToken();
 
@@ -46,7 +44,7 @@ public class GameIO {
 	    for (int j = 1; j < 5; j++) {
 		System.out
 			.print("                                                      ");
-		//System.out.printf("| %s |", field[row - 1][j].index);
+		// System.out.printf("| %s |", field[row - 1][j].index);
 		System.out.printf("| %s |", field[row - 1][j].getIndex());
 
 		System.out.println();
@@ -58,9 +56,9 @@ public class GameIO {
     }
 
     public static void drawHomes(Board board) {
-	//Player[] players = board.players;
-    Player[] players = board.getPlayers();
-	System.out.println("Spieler Häuser:");
+	// Player[] players = board.players;
+	Player[] players = board.getPlayers();
+	System.out.println("Spieler Hï¿½user:");
 
 	for (int i = 0; i < players.length; i++) {
 	    System.out.print(players[i].getName() + ": [ ");
@@ -84,16 +82,16 @@ public class GameIO {
 		System.out.println("nicht bewegt werden");
 		break;
 	    case THROW:
-		System.out.println("eine Figur schmeißen");
+		System.out.println("eine Figur schmeiï¿½en");
 		break;
 	    case FINISH:
-		System.out.println("ins Haus rücken");
+		System.out.println("ins Haus rï¿½cken");
 		break;
 	    case BARRIER:
 		System.out.println("eine Barriere errichten");
 		break;
 	    case MOVE:
-		System.out.println("gerückt werden");
+		System.out.println("gerï¿½ckt werden");
 		break;
 	    case START:
 		System.out.println("aufs Startfeld gesetzt werden");
@@ -101,7 +99,7 @@ public class GameIO {
 	    }
 
 	}
-	System.out.print("Welchen Zug möchten Sie durchführen?");
+	System.out.print("Welchen Zug mï¿½chten Sie durchfï¿½hren?");
 	int chosenMove = eingabe1.nextInt();
 	return moves.get(chosenMove - 1);
 
@@ -135,9 +133,35 @@ public class GameIO {
     public static void noMoves() {
 	Scanner eingabe = new Scanner(System.in);
 	System.out.println();
-	System.out.println("Keine Züge möglich! (Mit Enter bestätigen)");
+	System.out.println("Keine Zï¿½ge mï¿½glich! (Mit Enter bestï¿½tigen)");
 	eingabe.nextLine();
 
+    }
+
+    public static int printOptions() {
+	Scanner eingabe = new Scanner(System.in);
+	System.out.println("Welche Aktion mÃ¶chten Sie durchfÃ¼hren?");
+	System.out.println("1. Spielen");
+	System.out.println("2. Regeln anzeigen");
+	System.out.println("3. Spiel beenden");
+
+	while (true) {
+	    int number = eingabe.nextInt();
+	    //TODO: Buchstaben abfangen
+	    if (number < 1 || number > 3) {
+		System.out
+			.println("Bitte geben Sie eine Zahl zwischen 1 und 3 ein.");
+	    } else {
+		System.out.println("");
+		return number;
+	    }
+	}
+    }
+    
+    public static void printRules(){
+	//TODO: Spielregeln schreiben
+	System.out.println("Spielregeln:");
+	System.out.println();
     }
 
 }
