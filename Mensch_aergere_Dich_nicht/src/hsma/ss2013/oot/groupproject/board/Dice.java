@@ -1,19 +1,19 @@
 package hsma.ss2013.oot.groupproject.board;
 
 public class Dice {
-	private static Dice dice = new Dice(6);
-	private int sides;
+    private static Dice dice = new Dice(6);
+    private int sides;
 
-	private Dice(int sides) {
-		this.sides = sides;
-	}
+    private Dice(int sides) {
+	this.sides = sides;
+    }
 
-	public static Dice getDice() {
-		return dice;
-	}
+    public static Dice getDice() {
+	return dice;
+    }
 
-	public int roll() {
-		return (int) (Math.random() * (sides)) + 1;
-	}
+    public int roll() {
+	return (int) (Math.random() * (sides)) + 1;
+    }
 
 }

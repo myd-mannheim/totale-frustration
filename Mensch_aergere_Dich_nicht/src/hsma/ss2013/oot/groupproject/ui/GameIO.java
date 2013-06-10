@@ -4,11 +4,16 @@ import hsma.ss2013.oot.groupproject.board.Board;
 import hsma.ss2013.oot.groupproject.board.Field;
 import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.game.Move;
+import hsma.ss2013.oot.groupproject.player.AIPlayer;
 import hsma.ss2013.oot.groupproject.player.HumanPlayer;
 import hsma.ss2013.oot.groupproject.player.Player;
+import hsma.ss2013.oot.groupproject.rules.DefinedGameRulesPrinter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class GameIO {
 
@@ -17,17 +22,13 @@ public class GameIO {
 	drawHomes(board);
 	int row = 0;
 	for (int r = 0; r < 4; r++) {
-
 	    for (int i = row; i < (row + 10); i++) {
-
 		Field curF = field[i][0];
-
 		if (curF.isEmpty()) {
 		    // System.out.printf("[ %d ]", curF.index);
 		    System.out.printf("[ %d ]", curF.getIndex());
 		} else {
 		    ArrayList<Token> both = curF.getToken();
-
 		    System.out.print("[ ");
 		    for (Token e : both) {
 			System.out.print(e.getIcon());
@@ -46,13 +47,10 @@ public class GameIO {
 			.print("                                                      ");
 		// System.out.printf("| %s |", field[row - 1][j].index);
 		System.out.printf("| %s |", field[row - 1][j].getIndex());
-
 		System.out.println();
 	    }
 	    System.out.println();
-
 	}
-
     }
 
     public static void drawHomes(Board board) {
@@ -68,11 +66,10 @@ public class GameIO {
 	    System.out.print("]");
 	    System.out.println();
 	}
-
+	System.out.println();
     }
 
     public static Move getPlayerMove(ArrayList<Move> moves) {
-
 	Scanner eingabe1 = new Scanner(System.in);
 	for (int i = 0; i < moves.size(); i++) {
 	    System.out.printf("%d. Die Figur an der Stelle %d kann ", i + 1,
@@ -97,37 +94,143 @@ public class GameIO {
 		System.out.println("aufs Startfeld gesetzt werden");
 		break;
 	    }
-
 	}
 	System.out.print("Welchen Zug moechten Sie durchfuehren?");
+	// TODO Eingabepruefung bei nur 1 moeglichen Option!
+	// (IndexOutOfBoundsException)
 	int chosenMove = eingabe1.nextInt();
 	return moves.get(chosenMove - 1);
-
     }
 
+    /**
+     * Modifizierte {@link #gameStart()} mit Erfassung von Spielern des Typs
+     * {@link HumanPlayer} und {@link AIPlayer}. Wird von {@link GameIO}
+     * aufgerufen.
+     * 
+     * @return Ergebnis-Array der
+     *         {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])} - Methode
+     */
     public static Player[] gameStart() {
+	return mergePlayerTypes(createHP(), createAIP());
+    }
+
+    /**
+     * Private Methode fuer die Zusammenfuehrung der Objekte vom Typ HumanPlayer
+     * und AIPlayer in ein gemeinsames Array. Wird nur innerhalb dieser Klasse
+     * aufgerufen von {@link #gameStart()}.
+     * 
+     * Gibt das Array {} der menschlichen Spieler zurueck, wenn kein
+     * Computergegner angemeldet wurde.
+     * 
+     * Gibt das Array der computergesteuerten Spieler zurueck, wenn kein
+     * menschlicher Spieler angemeldet wurde.
+     * 
+     * Gibt das Array aller angemeldeten Spieler, wenn sowohl menschliche als
+     * auch computergesteuerte Spieler angemeldet wurden.
+     * 
+     * @param player
+     *            Liste vom Typ {@link Player} für Merge-Operation
+     * @param hPlayers
+     *            Array mit menschlichen Spielern
+     * @param aiPlayers
+     *            Array mit computergesteuerten Spielern
+     * @return Array aller angemeldeten Spieler
+     */
+    private static Player[] mergePlayerTypes(HumanPlayer[] hPlayers,
+	    AIPlayer[] aiPlayers) {
+	final int hPlayerCount = hPlayers.length;
+	final int aiPlayerCount = aiPlayers.length;
+	if (hPlayerCount == 0) {
+	    return aiPlayers;
+	}
+	if (aiPlayerCount == 0) {
+	    return hPlayers;
+	}
+	List<Player> player = new ArrayList<Player>(hPlayers.length
+		+ aiPlayers.length);
+	Collections.addAll(player, hPlayers);
+	Collections.addAll(player, aiPlayers);
+	return player.toArray(new Player[player.size()]);
+    }
+
+    /**
+     * Private Methode zum Ermitteln der gewuenschten Anzahl computergesteuerter
+     * Spieler vom Typ {@link AIPlayer}. Wird nur innerhalb dieser Klasse
+     * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
+     * Überprüft auch, ob versucht wird, mehr als 4 Computergegner zu erstellen.
+     * Erstellt automatisch Bezeichnungen
+     * 
+     * @param name
+     *            für die computergesteuerten Spieler.
+     * 
+     * @return Array aller angemeldeten menschlichen Spieler
+     */
+    private static AIPlayer[] createAIP() {
 	Scanner eingabe = new Scanner(System.in);
 	Scanner eingabeString = new Scanner(System.in);
-	System.out.print("Wie viele Spieler spielen mit? ");
-	int pCount = eingabe.nextInt();
-	Player[] players = new Player[pCount];
-	int startpoint = 0;
-	int endpoint = 52;
-	for (int i = 0; i < pCount; i++) {
-	    System.out.printf("Name des %d. Spielers: ", i + 1);
-	    String name = eingabeString.nextLine();
-	    Player player = new HumanPlayer(startpoint, endpoint,
-		    ((char) (i + 35)), name);
-	    startpoint += 10;
-	    if (i == 0) {
-		endpoint = 40;
-	    } else {
-		endpoint += 4;
-	    }
-	    players[i] = player;
-	}
+	System.out.print("Wie viele Computergegner sollen erstellt werden? ");
+	int aipCount = eingabe.nextInt();
+	if (aipCount <= 4) {
+	    AIPlayer[] aiplayers = new AIPlayer[aipCount];
+	    int startpoint = 0;
+	    int endpoint = 52;
+	    AtomicLong idCounter = new AtomicLong();
 
-	return players;
+	    for (int i = 0; i < aipCount; i++) {
+		String name = "CPU_" + String.valueOf(idCounter.getAndIncrement());
+		System.out.printf("Name des %d. Computergegners: " + name, i + 1);
+		System.out.println();
+		AIPlayer aiplayer = new AIPlayer(startpoint, endpoint, ((char) (i + 35)), name);
+		startpoint += 10;
+		if (i == 0) {
+		    endpoint = 40;
+		} else {
+		    endpoint += 4;
+		}
+		aiplayers[i] = aiplayer;
+	    }
+	    System.out.println();
+	    return aiplayers;
+	} else
+	    System.out.println("Es koennen maximal 4 Computerspieler erstellt werden!");
+	return createAIP();
+    }
+
+    /**
+     * Private Methode zum Ermitteln der gewuenschten Anzahl menschlicher
+     * Spieler vom Typ {@link #HumanPlayer}. Wird nur innerhalb dieser Klasse
+     * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
+     * Überprüft auch, ob versucht wird, mehr als 4 Spieler zu erstellen.
+     * 
+     * @return Array aller angemeldeten menschlichen Spieler
+     */
+    private static HumanPlayer[] createHP() {
+	Scanner eingabe = new Scanner(System.in);
+	Scanner eingabeString = new Scanner(System.in);
+	System.out.println();
+	System.out.print("Wie viele Spieler spielen mit? ");
+	int hpCount = eingabe.nextInt();
+	if (hpCount <= 4) {
+	    HumanPlayer[] hPlayers = new HumanPlayer[hpCount];
+	    int startpoint = 0;
+	    int endpoint = 52;
+	    for (int i = 0; i < hpCount; i++) {
+		System.out.printf("Name des %d. Spielers: ", i + 1);
+		String name = eingabeString.nextLine();
+		HumanPlayer hPlayer = new HumanPlayer(startpoint, endpoint, ((char) (i + 35)), name);
+		startpoint += 10;
+		if (i == 0) {
+		    endpoint = 40;
+		} else {
+		    endpoint += 4;
+		}
+		hPlayers[i] = hPlayer;
+	    }
+	    System.out.println();
+	    return hPlayers;
+	} else
+	    System.out.println("Es koennen maximal 4 Computerspieler erstellt werden!");
+	return createHP();
     }
 
     public static void noMoves() {
@@ -135,12 +238,11 @@ public class GameIO {
 	System.out.println();
 	System.out.println("Keine Zuege moeglich! (Mit Enter bestaetigen)");
 	eingabe.nextLine();
-
     }
 
     public static int printOptions() {
 	Scanner eingabe = new Scanner(System.in);
-	System.out.println("Welche Aktion mÃ¶chten Sie durchfuehren?");
+	System.out.println("Welche Aktion moechten Sie durchfuehren?");
 	System.out.println("1. Spielen");
 	System.out.println("2. Regeln anzeigen");
 	System.out.println("3. Spiel beenden");
@@ -149,8 +251,7 @@ public class GameIO {
 	    int number = eingabe.nextInt();
 	    // TODO: Buchstaben abfangen
 	    if (number < 1 || number > 3) {
-		System.out
-			.println("Bitte geben Sie eine Zahl zwischen 1 und 3 ein.");
+		System.out.println("Bitte geben Sie eine Zahl zwischen 1 und 3 ein.");
 	    } else {
 		System.out.println("");
 		return number;
@@ -158,63 +259,13 @@ public class GameIO {
 	}
     }
 
+    /**
+     * Methode zur Konsolenausgabe der Spielregeln. Verweist auf
+     * {@link DefinedGameRulesPrinter #printOutRules()}. Alle Spielregeln sind
+     * in {@link DefinedGameRulesPrinter} ausgelagert, um einen möglichen
+     * Austausch der Regeln zu vereinfachen.
+     */
     public static void printRules() {
-	System.out.println("Spielregeln:");
-	System.out.println("");
-	System.out
-		.println("Wer eine Sechs wuerfelt, muss eine eigene Spielfigur aus der Startposition");
-	System.out
-		.println("heraus auf sein Startfeld des Spielfeldes stellen. Danach darf er erneut wuerfeln");
-	System.out
-		.println("und muss mit seiner Spielfigur der Augenanzahl des Wuerfels entsprechend viele Felder");
-	System.out.println("vorruecken und damit das Startfeld freimachen.");
-	System.out
-		.println("Hat der Spieler jedoch keine Spielfigur in Startposition, d.h. alle seine Spielfiguren");
-	System.out
-		.println("sind im Spiel, kann er frei entscheiden, mit welcher seiner Spielfiguren er die erwuerfelten");
-	System.out
-		.println("sechs Spielfelder vorrueckt (auch die letzte Spielfigur, die auf dem Startfeld steht).");
-	System.out
-		.println("Auch dann darf der Spieler erneut wuerfeln und einen weiteren Zug machen.");
-	System.out
-		.println("Welche Spielfigur der Spieler beim erneuten Zug vorrueckt, bleibt ihm ueberlassen.");
-	System.out.println("");
-	System.out
-		.println("Kommt beim Umlauf eine Spielfigur auf ein Feld zum Stehen, welches bereits");
-	System.out
-		.println("von einer gegnerischen Spielfigur besetzt ist, gilt die gegnerische Spielfigur als");
-	System.out
-		.println("geschlagen und muss zurueck ins Haeuschen. Eigene Figuren koennen nicht geschlagen werden.");
-	System.out
-		.println("Sind keine weiteren eigenen Spielfiguren im Spiel, kann der Zug somit nicht ausgefuehrt werden,");
-	System.out.println("der naechste Spieler ist an der Reihe.");
-	System.out
-		.println("Hat ein Spieler mehrere Spielfiguren im Spielumlauf, darf dieser frei entscheiden, ");
-	System.out.println("mit welcher Spielfigur er ziehen mÃ¶chte.");
-	System.out
-		.println("Die Anzahl der Augen eines Wurfs duerfen nicht auf mehrere Spielfiguren verteilt werden.");
-	System.out.println("");
-	System.out.println("Sonderregeln:");
-	System.out.println("");
-	System.out
-		.println("1. Hat ein Spieler ueberhaupt keine Spielfigur auf dem Spielfeld (trifft bei Spielbeginn auf");
-	System.out
-		.println("alle Spieler zu), so hat er drei Versuche eine Sechs zu wuerfeln, um eine Spielfigur ins Spiel");
-	System.out.println("zu bringen.");
-	System.out
-		.println("2. Wer mit einer gewuerfelten Zahl eine Spielfigur eines Gegners schlagen kann, muss dies");
-	System.out.println("ausfuehren (Schlagzwang).");
-	System.out
-		.println("3. Erreicht eine Spielfigur durch den Zug ein Feld, auf dem bereits eine eigene Figur steht,");
-	System.out
-		.println("so bilden diese beiden Figuren eine Barriere. Diese Barriere kann von keiner Spielfigur");
-	System.out
-		.println("uebersprungen werden (auch nicht von eigenen Spielfiguren). Die Spielfiguren, die die");
-	System.out
-		.println("Barriere bilden, koennen nicht geschlagen werden. Die Barriere bleibt so lange bestehen");
-	System.out
-		.println("bis eine Spielfigur weitergezogen wird bzw. werden muss.");
-	System.out.println("");
-	System.out.println("");
+	DefinedGameRulesPrinter.printOutRules();
     }
 }
