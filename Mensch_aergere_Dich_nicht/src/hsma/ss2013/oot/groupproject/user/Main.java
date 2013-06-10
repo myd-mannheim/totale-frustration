@@ -1,4 +1,4 @@
-package hsma.ss2013.oot.groupprjoct.user;
+package hsma.ss2013.oot.groupproject.user;
 
 import hsma.ss2013.oot.groupproject.game.GameFactory;
 
