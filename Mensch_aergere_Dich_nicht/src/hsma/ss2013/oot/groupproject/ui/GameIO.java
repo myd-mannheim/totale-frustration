@@ -110,7 +110,7 @@ public class GameIO {
 	 * @return Ergebnis-Array der
 	 *         {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])} - Methode
 	 */
-	public static Player[] gameStart() {
+    public static Player[] gameStart() {
 		
 		HumanPlayer[] hp = createHP();
 		AIPlayer[] aip;
@@ -119,7 +119,7 @@ public class GameIO {
 		
 		if(maxAIPlayerpossible == 0){
 			aip = new AIPlayer[0]; //Wenn keine Computergegner möglich sind (da schon 4 menschliche Spieler, wird leeres Array übergeben
-		}else{		
+		} else {		
 			aip = createAIP(maxAIPlayerpossible);
 		}
 		

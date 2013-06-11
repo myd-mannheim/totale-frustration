@@ -4,6 +4,7 @@ import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.game.Move;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Player {
     protected int startpoint;
@@ -30,9 +31,10 @@ public abstract class Player {
      */
     // War davor im Konstruktor
     private void createTokens(Player player) {
+	AtomicLong idCounter = new AtomicLong();
 	// Create Tokens and set to Home
 	for (int i = 0; i < 4; i++) {
-	    Token tokenToAdd = new Token(-1, this, icon);
+	    Token tokenToAdd = new Token(-1, this, icon, (int)(idCounter.getAndIncrement()));
 	    myTokens.add(tokenToAdd);
 	    home.add(tokenToAdd);
 	}

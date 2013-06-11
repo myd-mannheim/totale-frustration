@@ -45,8 +45,6 @@ public class GameRules {
 	    }
 	    pMoves.add(move);
 	}
-
-	System.out.println(pMoves.size() + "!!!!");
 	pMoves = deleteWaste(pMoves);
 
 	return pMoves;
