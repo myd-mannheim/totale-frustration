@@ -27,14 +27,14 @@ public class AI {
 
     /**
      * Methode zur Bestimmung des Ratings für Moves. Die Methode kopiert die
-     * übergebene {@code ArrayList<Moves>} in ein {@code Move[]}-Array und
+     * übergebene {@code ArrayList<Moves>} in ein {@code Move[]} -Array und
      * sortiert dieses Array nach Token-IDs in der inneren anonymen Klasse über
      * einen Comparator.
      * 
      * @param moves
      * @return
      */
-    public boolean[][] getRating(ArrayList<Move> moves) {
+    public boolean[][] createRatingForTokens(ArrayList<Move> moves) {
 	Move[] moveArray = new Move[moves.size()];
 	moves.toArray(moveArray);
 	/*
@@ -61,7 +61,8 @@ public class AI {
 		return 0; // dummy, hier sollte man nie hinkommen
 	    }
 	});
-	Token lastToken = null;
+	Token lastToken = moveArray[0].getToken();
+	;
 	int tokenRatingCounter = -1;
 	// Führe für jeden Token die Bewertung durch (setzten des entsprechenden
 	// Arrayplatzes in rating[]
@@ -69,6 +70,7 @@ public class AI {
 	    if (!(lastToken.getID() == moveArray[i].getToken().getID())) {
 		lastToken = moveArray[i].getToken();
 		tokenRatingCounter++;
+
 		/*
 		 * Setzt die entsprechenden Arrayplätze für jedes Token in
 		 * {@code rating[]} in der Reihenfolge des Arrays {@code
@@ -96,6 +98,8 @@ public class AI {
 		    break;
 		}
 	    }
+	    System.out.println(moveArray[i].getToken().getID());
+
 	}
 	return this.rating;
     }
