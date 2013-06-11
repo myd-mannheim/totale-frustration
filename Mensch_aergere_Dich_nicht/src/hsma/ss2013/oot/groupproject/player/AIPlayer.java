@@ -7,18 +7,17 @@ import java.util.ArrayList;
 
 /**
  * @author moshpit
- *
+ * 
  */
 public class AIPlayer extends Player {
-    
-    public AIPlayer(int startpoint, int endpoint, char icon, String name) {
-	super(startpoint, endpoint, icon, name);
-    }
 
-    @Override
-    public Move chooseMove(ArrayList<Move> moves) {
-	return GameIO.getPlayerMove(moves);
-    }
+	public AIPlayer(int startpoint, int endpoint, char icon, String name) {
+		super(startpoint, endpoint, icon, name);
+	}
 
-    
+	@Override
+	public Move chooseMove(ArrayList<Move> moves) {
+		return GameIO.getPlayerMove(moves);
+	}
+
 }
