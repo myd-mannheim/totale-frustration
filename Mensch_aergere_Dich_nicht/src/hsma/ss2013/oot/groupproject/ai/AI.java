@@ -1,4 +1,4 @@
-package hsma.ss2013.oot.groupproject.player.ai;
+package hsma.ss2013.oot.groupproject.ai;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,25 +8,45 @@ import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.game.Move;
 import hsma.ss2013.oot.groupproject.game.MoveType;
 
+/**
+ * Diese Klasse stellt die Implementierung für die künstliche Intelligenz
+ * bereit.
+ * 
+ * @author moshpit
+ * 
+ */
 public class AI {
-
+    /*
+     * die Reihenfolge spiegelt die Priorisierung wieder, Indexlpatz [0] heißt
+     * hohe Prio
+     */
     private MoveType[] moveTypeDefaultOrder = { MoveType.THROW,
 	    MoveType.FINISH, MoveType.START, MoveType.MOVE, MoveType.SUSPEND };
-    // die Reihenfolge spiegelt die Priorisierung wieder, ganz vorne [0] heißt
-    // hohe Prio
 
     private boolean[][] rating = new boolean[4][MoveType.values().length];
 
+    /**
+     * Methode zur Bestimmung des Ratings für Moves. Die Methode kopiert die
+     * übergebene {@code ArrayList<Moves>} in ein {@code Move[]}-Array und
+     * sortiert dieses Array nach Token-IDs in der inneren anonymen Klasse über
+     * einen Comparator.
+     * 
+     * @param moves
+     * @return
+     */
     public boolean[][] getRating(ArrayList<Move> moves) {
-
 	Move[] moveArray = new Move[moves.size()];
 	moves.toArray(moveArray);
-	// Sortiere Array von Moves nach Token (Token ID)
+	/*
+	 * Sortiere {@code ArrayList<Moves>} nach Token unter Berücksichtigung
+	 * der Token-ID)
+	 */
 	Arrays.sort(moveArray, new Comparator<Move>() {
 	    @Override
 	    public boolean equals(Object obj) {
 		return super.equals(obj);
 	    }
+
 	    @Override
 	    public int compare(Move o1, Move o2) {
 		if (o1.getToken().getID() == o2.getToken().getID()) {
@@ -49,6 +69,13 @@ public class AI {
 	    if (!(lastToken.getID() == moveArray[i].getToken().getID())) {
 		lastToken = moveArray[i].getToken();
 		tokenRatingCounter++;
+		/*
+		 * Setzt die entsprechenden Arrayplätze für jedes Token in
+		 * {@code rating[]} in der Reihenfolge des Arrays {@code
+		 * moveTypeDefaultOrder[]} auf true (= Spielzug möglich) oder
+		 * false (= Spielzug nicht möglich). Wird für die spätere
+		 * Auswertung / Priorisierung des {@link AIPlayer} verwendet.
+		 */
 		switch (moveArray[i].getMoveType()) {
 		case THROW:
 		    this.rating[tokenRatingCounter][0] = true;
@@ -73,5 +100,6 @@ public class AI {
 	return this.rating;
     }
 
+    // TODO Auswertung der Spielzüge und Priorisierung
 
 }

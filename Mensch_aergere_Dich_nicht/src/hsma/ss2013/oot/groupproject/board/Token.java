@@ -1,9 +1,13 @@
 package hsma.ss2013.oot.groupproject.board;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import hsma.ss2013.oot.groupproject.player.Player;
 
+/**
+ * Diese Klasse stellt die Implementierung für die einzelnen 
+ * Spielfiguren eines Spielers zur Verfügung.
+ * @author moshpit
+ *
+ */
 public class Token {
     protected int position;
     protected Player owner;
@@ -13,6 +17,12 @@ public class Token {
 
     // TODO wenn geworfen moves counter auf 0 setzen!!!
 
+    /**
+     * @param pos
+     * @param owner
+     * @param icon
+     * @param id Token-Id (nur für die Auswertung in {@code AI} gedacht)
+     */
     public Token(int pos, Player owner, char icon, int id) {
 	this.position = pos;
 	this.owner = owner;

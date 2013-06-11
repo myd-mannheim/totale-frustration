@@ -7,7 +7,7 @@ import hsma.ss2013.oot.groupproject.game.Move;
 import hsma.ss2013.oot.groupproject.player.AIPlayer;
 import hsma.ss2013.oot.groupproject.player.HumanPlayer;
 import hsma.ss2013.oot.groupproject.player.Player;
-import hsma.ss2013.oot.groupproject.rules.DefinedGameRulesPrinter;
+import hsma.ss2013.oot.groupproject.rules.RulesPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -280,11 +280,11 @@ public class GameIO {
 
 	/**
 	 * Methode zur Konsolenausgabe der Spielregeln. Verweist auf
-	 * {@link DefinedGameRulesPrinter #printOutRules()}. Alle Spielregeln sind
-	 * in {@link DefinedGameRulesPrinter} ausgelagert, um einen möglichen
+	 * {@link RulesPrinter #printOutRules()}. Alle Spielregeln sind
+	 * in {@link RulesPrinter} ausgelagert, um einen möglichen
 	 * Austausch der Regeln zu vereinfachen.
 	 */
 	public static void printRules() {
-		DefinedGameRulesPrinter.printOutRules();
+		RulesPrinter.printOutRules();
 	}
 }

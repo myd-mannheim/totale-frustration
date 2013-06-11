@@ -1,6 +1,6 @@
 package hsma.ss2013.oot.groupproject.rules;
 
-public abstract class DefinedGameRulesPrinter {
+public abstract class RulesPrinter {
 
     public static void printOutRules() {
 	System.out.println("_______________________________________________________________________________________________");

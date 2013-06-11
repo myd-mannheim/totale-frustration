@@ -1,9 +1,9 @@
 package hsma.ss2013.oot.groupproject.test;
 
+import hsma.ss2013.oot.groupproject.ai.AI;
 import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.game.Move;
 import hsma.ss2013.oot.groupproject.game.MoveType;
-import hsma.ss2013.oot.groupproject.player.ai.AI;
 
 import java.util.ArrayList;
 

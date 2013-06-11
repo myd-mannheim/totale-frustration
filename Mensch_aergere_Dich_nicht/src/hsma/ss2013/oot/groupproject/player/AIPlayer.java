@@ -6,6 +6,8 @@ import hsma.ss2013.oot.groupproject.ui.GameIO;
 import java.util.ArrayList;
 
 /**
+ * Diese Klasse stellt die Implementierung für computergesteuerte Spieler 
+ * zur Verfügung.
  * @author moshpit
  * 
  */
