@@ -1,5 +1,6 @@
 package hsma.ss2013.oot.groupproject.player;
 
+import hsma.ss2013.oot.groupproject.ai.AI;
 import hsma.ss2013.oot.groupproject.game.Move;
 import hsma.ss2013.oot.groupproject.ui.GameIO;
 
@@ -19,7 +20,10 @@ public class AIPlayer extends Player {
 
 	@Override
 	public Move chooseMove(ArrayList<Move> moves) {
-		return GameIO.getPlayerMove(moves);
+		//return GameIO.getPlayerMove(moves);
+		AI ai = new AI();
+		ai.createRatingForTokens(moves);
+		return ai.getMoveByRating(moves);
 	}
 
 }

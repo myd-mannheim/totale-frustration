@@ -26,14 +26,19 @@ public class TestAI {
 	Move m3 = new Move(null, t3, MoveType.FINISH);
 	Move m4 = new Move(null, t4, MoveType.FINISH);
 
-	moves.add(m4);
+	/*moves.add(m4);
 	moves.add(m3);
 	moves.add(m2);
 	moves.add(m3);
 	moves.add(m4);
 	moves.add(m1);
 	moves.add(m3);
+	moves.add(m1);*/
+	
 	moves.add(m1);
+	moves.add(m2);
+	moves.add(m3);
+	moves.add(m4);
 
     }
 
