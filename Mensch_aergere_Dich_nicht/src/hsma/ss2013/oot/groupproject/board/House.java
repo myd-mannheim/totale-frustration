@@ -8,7 +8,10 @@ public class House extends Field {
     public House(int index, Player owner) {
 	super(index);
 	this.owner = owner;
-
     }
+    
+    public Player getOwner() {
+		return this.owner;
+	}
 
 }

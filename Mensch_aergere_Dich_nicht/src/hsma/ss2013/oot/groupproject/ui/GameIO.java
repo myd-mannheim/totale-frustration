@@ -2,6 +2,7 @@ package hsma.ss2013.oot.groupproject.ui;
 
 import hsma.ss2013.oot.groupproject.board.Board;
 import hsma.ss2013.oot.groupproject.board.Field;
+import hsma.ss2013.oot.groupproject.board.House;
 import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.game.Move;
 import hsma.ss2013.oot.groupproject.player.AIPlayer;
@@ -11,47 +12,81 @@ import hsma.ss2013.oot.groupproject.rules.RulesPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class GameIO {
 
-	public static void update(Board board) {
-		Field[][] field = board.field;
-		drawHomes(board);
-		int row = 0;
-		for (int r = 0; r < 4; r++) {
-			for (int i = row; i < (row + 10); i++) {
-				Field curF = field[i][0];
-				if (curF.isEmpty()) {
-					// System.out.printf("[ %d ]", curF.index);
-					System.out.printf("[ %d ]", curF.getIndex());
-				} else {
-					ArrayList<Token> both = curF.getToken();
-					System.out.print("[ ");
-					for (Token e : both) {
-						System.out.print(e.getIcon());
-					}
-					System.out.print(" ]");
-				}
-				if (i < 10) {
-					System.out.print(" ");
-				}
-			}
-			row += 10;
-			System.out.println();
+	private static String[][] printField = new String[11][11];
 
-			for (int j = 1; j < 5; j++) {
-				System.out
-						.print("                                                      ");
-				// System.out.printf("| %s |", field[row - 1][j].index);
-				System.out.printf("| %s |", field[row - 1][j].getIndex());
-				System.out.println();
+	public static void update(Board board) {
+		drawHomes(board);
+
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
+				printField[i][j] = "-";
 			}
-			System.out.println();
 		}
+
+		// Spielbrett printen
+		for (int i = 0; i < board.field.length; i++) {
+			// Feld an der aktuellen Position zwischenspeichern
+			Field tempField = board.field[i][0];
+
+			// Falls auf dem Feld keine Figur steht X ausgeben
+			if (tempField.getToken().size() == 0) {
+				printField[tempField.getXkoord()][tempField.getyKoord()] = "O";
+			//	printField[tempField.getXkoord()][tempField.getyKoord()] = "" + tempField.getIndex();
+			} else {
+				// Sonst Figuren ausgeben
+				printField[tempField.getXkoord()][tempField.getyKoord()] = ""
+						+ tempField.tokensToString();
+			}
+
+		}
+
+		// Homebretter ausgeben
+		for (int i = 9; i < 40; i += 10) {
+			for (int j = 1; j < 5; j++) {
+				House tempField = (House)board.field[i][j];
+				if (tempField.getToken().size() == 0) {
+					printField[tempField.getXkoord()][tempField.getyKoord()] = "X";
+				} else {
+					// Sonst Figuren ausgeben
+					printField[tempField.getXkoord()][tempField.getyKoord()] = ""
+							+ tempField.tokensToString();
+				}
+			}
+		}
+
+		// Spielfeld ausgeben
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < 11; j++) {
+				System.out.print(printField[j][i] + " ");
+			}
+			System.out.print("\n");
+		}
+		//System.out.println("\n");
 	}
+
+	/*
+	 * public static void update(Board board) { Field[][] field = board.field;
+	 * drawHomes(board); int row = 0; for (int r = 0; r < 4; r++) { for (int i =
+	 * row; i < (row + 10); i++) { Field curF = field[i][0]; if (curF.isEmpty())
+	 * { // System.out.printf("[ %d ]", curF.index); System.out.printf("[ %d ]",
+	 * curF.getIndex()); } else { ArrayList<Token> both = curF.getToken();
+	 * System.out.print("[ "); for (Token e : both) {
+	 * System.out.print(e.getIcon()); } System.out.print(" ]"); } if (i < 10) {
+	 * System.out.print(" "); } } row += 10; System.out.println();
+	 * 
+	 * for (int j = 1; j < 5; j++) { System.out
+	 * .print("                                                      "); //
+	 * System.out.printf("| %s |", field[row - 1][j].index);
+	 * System.out.printf("| %s |", field[row - 1][j].getIndex());
+	 * System.out.println(); } System.out.println(); } }
+	 */
 
 	public static void drawHomes(Board board) {
 		// Player[] players = board.players;
@@ -59,7 +94,7 @@ public class GameIO {
 		System.out.println("Spieler Haeuser:");
 
 		for (int i = 0; i < players.length; i++) {
-			System.out.print(players[i].getName() + ": [ ");
+			System.out.print("Spieler: " + players[i].getName() + "\t[ ");
 			for (int j = 0; j < players[i].getHome().size(); j++) {
 				System.out.print(players[i].getHome().get(j).getIcon() + " ");
 			}
@@ -110,19 +145,21 @@ public class GameIO {
 	 * @return Ergebnis-Array der
 	 *         {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])} - Methode
 	 */
-    public static Player[] gameStart() {
-		
+	public static Player[] gameStart() {
+
 		HumanPlayer[] hp = createHP();
 		AIPlayer[] aip;
-		
-		int maxAIPlayerpossible = 4-hp.length;
-		
-		if(maxAIPlayerpossible == 0){
-			aip = new AIPlayer[0]; //Wenn keine Computergegner möglich sind (da schon 4 menschliche Spieler, wird leeres Array übergeben
-		} else {		
+
+		int maxAIPlayerpossible = 4 - hp.length;
+
+		if (maxAIPlayerpossible == 0) {
+			aip = new AIPlayer[0]; // Wenn keine Computergegner möglich sind (da
+									// schon 4 menschliche Spieler, wird leeres
+									// Array übergeben
+		} else {
 			aip = createAIP(maxAIPlayerpossible);
 		}
-		
+
 		return mergePlayerTypes(hp, aip);
 	}
 
@@ -207,8 +244,8 @@ public class GameIO {
 			System.out.println();
 			return aiplayers;
 		} else
-			System.out
-					.println("Es koennen maximal "+maxPossibleAIPlayers+" Computerspieler erstellt werden!");
+			System.out.println("Es koennen maximal " + maxPossibleAIPlayers
+					+ " Computerspieler erstellt werden!");
 		return createAIP(maxPossibleAIPlayers);
 	}
 
@@ -280,9 +317,9 @@ public class GameIO {
 
 	/**
 	 * Methode zur Konsolenausgabe der Spielregeln. Verweist auf
-	 * {@link RulesPrinter #printOutRules()}. Alle Spielregeln sind
-	 * in {@link RulesPrinter} ausgelagert, um einen möglichen
-	 * Austausch der Regeln zu vereinfachen.
+	 * {@link RulesPrinter #printOutRules()}. Alle Spielregeln sind in
+	 * {@link RulesPrinter} ausgelagert, um einen möglichen Austausch der Regeln
+	 * zu vereinfachen.
 	 */
 	public static void printRules() {
 		RulesPrinter.printOutRules();
