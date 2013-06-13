@@ -159,7 +159,7 @@ public class GameIO {
 									// schon 4 menschliche Spieler, wird leeres
 									// Array übergeben
 		} else {
-			aip = createAIP(maxAIPlayerpossible, iconCounter+hp.length);
+			aip = createAIP(maxAIPlayerpossible, iconCounter+hp.length, 10*hp.length);
 		}
 
 		return mergePlayerTypes(hp, aip);
@@ -217,14 +217,14 @@ public class GameIO {
 	 * 
 	 * @return Array aller angemeldeten menschlichen Spieler
 	 */
-	private static AIPlayer[] createAIP(int maxPossibleAIPlayers, int iconCounter) {
+	private static AIPlayer[] createAIP(int maxPossibleAIPlayers, int iconCounter, int nextStartPoint) {
 		Scanner eingabe = new Scanner(System.in);
 		Scanner eingabeString = new Scanner(System.in);
 		System.out.print("Wie viele Computergegner sollen erstellt werden? ");
 		int aipCount = eingabe.nextInt();
 		if (aipCount <= maxPossibleAIPlayers) {
 			AIPlayer[] aiplayers = new AIPlayer[aipCount];
-			int startpoint = 0;
+			//int startpoint = 0;
 			int endpoint = 52;
 			AtomicLong idCounter = new AtomicLong();
 
@@ -234,9 +234,9 @@ public class GameIO {
 				System.out.printf("Name des %d. Computergegners: " + name,
 						i + 1);
 				System.out.println();
-				AIPlayer aiplayer = new AIPlayer(startpoint, endpoint,
+				AIPlayer aiplayer = new AIPlayer(nextStartPoint, endpoint,
 						((char) (i + iconCounter)), name);
-				startpoint += 10;
+				nextStartPoint += 10;
 				if (i == 0) {
 					endpoint = 40;
 				} else {
@@ -249,7 +249,7 @@ public class GameIO {
 		} else
 			System.out.println("Es koennen maximal " + maxPossibleAIPlayers
 					+ " Computerspieler erstellt werden!");
-		return createAIP(maxPossibleAIPlayers, iconCounter);
+		return createAIP(maxPossibleAIPlayers, iconCounter, nextStartPoint);
 	}
 
 	/**
