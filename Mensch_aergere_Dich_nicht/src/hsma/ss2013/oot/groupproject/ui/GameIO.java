@@ -146,8 +146,10 @@ public class GameIO {
 	 *         {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])} - Methode
 	 */
 	public static Player[] gameStart() {
+		
+		int iconCounter = 35;
 
-		HumanPlayer[] hp = createHP();
+		HumanPlayer[] hp = createHP(iconCounter);
 		AIPlayer[] aip;
 
 		int maxAIPlayerpossible = 4 - hp.length;
@@ -157,11 +159,12 @@ public class GameIO {
 									// schon 4 menschliche Spieler, wird leeres
 									// Array übergeben
 		} else {
-			aip = createAIP(maxAIPlayerpossible);
+			aip = createAIP(maxAIPlayerpossible, iconCounter+hp.length);
 		}
 
 		return mergePlayerTypes(hp, aip);
 	}
+	
 
 	/**
 	 * Private Methode fuer die Zusammenfuehrung der Objekte vom Typ HumanPlayer
@@ -214,7 +217,7 @@ public class GameIO {
 	 * 
 	 * @return Array aller angemeldeten menschlichen Spieler
 	 */
-	private static AIPlayer[] createAIP(int maxPossibleAIPlayers) {
+	private static AIPlayer[] createAIP(int maxPossibleAIPlayers, int iconCounter) {
 		Scanner eingabe = new Scanner(System.in);
 		Scanner eingabeString = new Scanner(System.in);
 		System.out.print("Wie viele Computergegner sollen erstellt werden? ");
@@ -232,7 +235,7 @@ public class GameIO {
 						i + 1);
 				System.out.println();
 				AIPlayer aiplayer = new AIPlayer(startpoint, endpoint,
-						((char) (i + 35)), name);
+						((char) (i + iconCounter)), name);
 				startpoint += 10;
 				if (i == 0) {
 					endpoint = 40;
@@ -246,7 +249,7 @@ public class GameIO {
 		} else
 			System.out.println("Es koennen maximal " + maxPossibleAIPlayers
 					+ " Computerspieler erstellt werden!");
-		return createAIP(maxPossibleAIPlayers);
+		return createAIP(maxPossibleAIPlayers, iconCounter);
 	}
 
 	/**
@@ -257,7 +260,7 @@ public class GameIO {
 	 * 
 	 * @return Array aller angemeldeten menschlichen Spieler
 	 */
-	private static HumanPlayer[] createHP() {
+	private static HumanPlayer[] createHP(int iconCounter) {
 		Scanner eingabe = new Scanner(System.in);
 		Scanner eingabeString = new Scanner(System.in);
 		System.out.println();
@@ -271,7 +274,7 @@ public class GameIO {
 				System.out.printf("Name des %d. Spielers: ", i + 1);
 				String name = eingabeString.nextLine();
 				HumanPlayer hPlayer = new HumanPlayer(startpoint, endpoint,
-						((char) (i + 35)), name);
+						((char) (i + iconCounter)), name);
 				startpoint += 10;
 				if (i == 0) {
 					endpoint = 40;
@@ -285,7 +288,7 @@ public class GameIO {
 		} else
 			System.out
 					.println("Es koennen maximal 4 Computerspieler erstellt werden!");
-		return createHP();
+		return createHP(iconCounter);
 	}
 
 	public static void noMoves() {
