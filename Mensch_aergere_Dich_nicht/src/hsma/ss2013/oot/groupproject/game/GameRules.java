@@ -1,14 +1,13 @@
 package hsma.ss2013.oot.groupproject.game;
 
-
 import hsma.ss2013.oot.groupproject.board.Board;
 import hsma.ss2013.oot.groupproject.board.Field;
 import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.player.Player;
-
 import java.util.ArrayList;
 
 public class GameRules {
+
 	private static GameRules rules = new GameRules();
 
 	public static GameRules getInstance() {
@@ -22,7 +21,7 @@ public class GameRules {
 		for (int i = 0; i < plTokens.size(); i++) {
 
 			Token currToken = plTokens.get(i);
-			Move move = null;
+			Move move = new NullMove(null, null, null); //Dummy Inhalt, damit nicht null in die ArrayList geschrieben wird
 
 			if (isInHouse(currToken)) {
 				if (isStartable(diceRoll)) {
@@ -44,11 +43,9 @@ public class GameRules {
 			} else {
 				move = new Move(player, currToken, MoveType.MOVE);
 			}
-			pMoves.add(move);
-
+			if(!(move instanceof NullMove))			
+				pMoves.add(move);
 		}
-		
-		System.out.println(pMoves.size()+"!!!!");
 		pMoves = deleteWaste(pMoves);
 
 		return pMoves;
@@ -56,26 +53,36 @@ public class GameRules {
 	}
 
 	private ArrayList<Move> deleteWaste(ArrayList<Move> pMoves) {
+		
+		ArrayList<Move> movesToRemove = new ArrayList<>(); 
+		ArrayList<Integer> indexToAdd = new ArrayList<>(); 
+		ArrayList<Move> singleMove = new ArrayList<>();
+		
 		for (int i = 0; i < pMoves.size(); i++) {
-			if (pMoves.isEmpty()) {
+			if (pMoves.get(i).getMoveType() == MoveType.THROW) {
+				indexToAdd.add(i);
 				break;
 			}
-			if (pMoves.get(i).getMoveType() == MoveType.THROW) {
-				ArrayList<Move> singleMove = new ArrayList<>();
-				singleMove.add(pMoves.get(i));
-				return singleMove;
-			}
-			if (pMoves.get(i).getMoveType() == MoveType.SUSPEND) {
-				pMoves.remove(i);
-				i--;
-			}
 
+			if (pMoves.get(i).getMoveType() == MoveType.SUSPEND) {
+				movesToRemove.add(pMoves.get(i));
+			}
 		}
+		
+		for (int i = 0; i < indexToAdd.size(); i++) {
+			singleMove.add(pMoves.get(indexToAdd.get(i)));
+		}
+		
+		if(singleMove.size() > 0)
+			return singleMove;
+		
+		pMoves.removeAll(movesToRemove);		
+		
 		return pMoves;
 	}
 
 	private boolean isStartBlocked(Player player, Board board) {
-		//Field startField = board.getField(player.startpoint);
+		// Field startField = board.getField(player.startpoint);
 		Field startField = board.getField(player.getStartpoint());
 		if (startField.isBarrier()) {
 			return true;
@@ -121,7 +128,6 @@ public class GameRules {
 			}
 		}
 		return false;
-
 	}
 
 	private boolean isThrowable(int diceRoll, Player player, Board board,
@@ -137,7 +143,6 @@ public class GameRules {
 		} else {
 			return false;
 		}
-
 	}
 
 	private boolean isBarrierPossible(int diceRoll, Player player, Board board,
@@ -153,7 +158,6 @@ public class GameRules {
 		} else {
 			return false;
 		}
-
 	}
 
 	private boolean isFinishPossible(int diceRoll, Player player, Board board,
@@ -161,16 +165,13 @@ public class GameRules {
 		int remainingMoves = diceRoll - (40 - currToken.getMoves());
 		if (currToken.getMoves() + diceRoll > 40) {
 			if (remainingMoves < 4) {
-				System.out.println(player.getEndpoint() +" " + remainingMoves);
+				System.out.println(player.getEndpoint() + " " + remainingMoves);
 				if (board.getField(player.getEndpoint() + remainingMoves)
 						.isEmpty()) {
 					return true;
 				}
-
 			}
 		}
 		return false;
-
 	}
-
 }
