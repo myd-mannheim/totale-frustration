@@ -1,11 +1,10 @@
 package hsma.ss2013.oot.groupproject.board;
 
-
-
 import hsma.ss2013.oot.groupproject.game.Move;
 import hsma.ss2013.oot.groupproject.player.Player;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Board {
 	public Field[][] field;
@@ -22,37 +21,36 @@ public class Board {
 
 	}
 
-	public void init() {
+	/**
+	 * Initalisiert das Spielfeld
+	 */
+	private void init() {
 		int index = 0;
 
-		// Creating Field
-
+		// Erstelle Felder
 		for (int i = 0; i < field.length; i++) {
 			field[i][0] = new Field(index);
 			index++;
 		}
 
-		// Creating Players Houses(Goals)
-		int playerNum = 1;
+		// Erstelle Spieler Hausfelder
+		int playerNumber = 1;
 		for (int j = 9; j <= 39; j += 10) {
-			Player currPlayer = null;
-			if (playerNum < players.length) {
-				currPlayer = players[playerNum];
+			Player currentPlayer = null;
+			if (playerNumber < players.length) {
+				currentPlayer = players[playerNumber];
 			}
-
 			for (int i = 1; i < 5; i++) {
-
-				field[j][i] = new House(index, currPlayer);
-
+				field[j][i] = new House(index, currentPlayer);
 				index++;
 			}
-			if (playerNum == 3) {
-				playerNum = -1;
+			if (playerNumber == 3) {
+				playerNumber = -1;
 			}
-			playerNum++;
-
+			playerNumber++;
 		}
-
+		
+		setCoords();
 	}
 
 	public Field[][] getFieldArray() {
@@ -86,17 +84,26 @@ public class Board {
 		return players;
 	}
 
+	/**
+	 * Wertet die Art des Zuges aus und daran an die entsprechende ausführende Methode
+	 * 
+	 * @param move - Object das Informationen zum Zug bereithält
+	 * @param diceRoll - gewürfelte Zahl
+	 */
 	public void moveToken(Move move, int diceRoll) {
 
 		switch (move.getMoveType()) {
 		case THROW:
+			throwToken(move, diceRoll);
 			break;
 		case FINISH:
+			moveHome(move, diceRoll);
 			break;
 		case BARRIER:
+			buildBarrier(move, diceRoll);
 			break;
 		case MOVE:
-			simpleMoveToken(move,diceRoll);
+			simpleMoveToken(move, diceRoll);
 			break;
 		case START:
 			moveToStart(move);
@@ -132,34 +139,116 @@ public class Board {
 		// }
 	}
 
-	private void simpleMoveToken(Move move, int diceRoll) {
-		int tokenPosition = move.getToken().getPosition();
+	/**
+	 * Versetzt eine Figur um die gewürfelten Schritte und schmeißt gegenerische 
+	 * Figuren zurück in deren Homefield
+	 * 
+	 * @param move - MoveObject das Informationen zum Zug trägt
+	 * @param diceRoll - gewürfelte Zahl
+	 */
+	private void throwToken(Move move, int diceRoll){
+		Token attackingToken = move.getToken();
+		int targetField = attackingToken.getPosition() + diceRoll;
 		
-		ArrayList<Token> tokens = getField(tokenPosition).getToken();
+		//Liste mit Tokens auf dem Zielfeld
+		ArrayList<Token> tokensToThrow = this.field[targetField][0].getToken();
 		
-		Token tokenToMove = tokens.get(findToken(tokens, move.getToken()));
+		//Iterator erstellen und über die Tokenliste iterieren
+		Iterator<Token> iterator = tokensToThrow.iterator();
+		while(iterator.hasNext()){
+			Token tempToken = iterator.next();
+			
+			//Prüfen ob die Tokens dem selben Spieler gehören
+			if(tempToken.getOwner() != attackingToken.getOwner()){
+				//Token zurück auf das Startfeld setzen
+				tempToken.moveTo(-1); //Stimmt -1?
+				//Token vom Feld nehmen
+				tokensToThrow.remove(tempToken);
+				//Schrittcounter auf 0 setzen
+				tempToken.setMovesToNull();	
+			}
+		}
 		
-		tokens.remove(findToken(tokens, move.getToken()));
+		//Schlagende Figur aufs Spielfeld setzen und Schrittecounter erhöhen
+		attackingToken.addMoves(diceRoll);
+		this.field[targetField][0].setToken(attackingToken);
+	}
+	
+	/**
+	 * Läuft mit einer Figur bis deren Homefeld. Mit den übrigen Schritten
+	 * läufft die Figur in ihr Homefeld hinein.
+	 * 
+	 * @param move - MoveObject das Informationen zum Zug trägt
+	 * @param diceRoll - gewürfelte Zahl
+	 */
+	private void moveHome(Move move, int diceRoll){
+		Token currentToken = move.getToken();
 		
-		getField(tokenPosition).setBarrier();
+		//Restschritte die im Homefeld gelaufen werden ermitteln
+		int restSteps = diceRoll - currentToken.getRestSteps();
 		
-		Field destination = getField(tokenPosition + diceRoll);
+		//Position des Homefelds ermitteln
+		int homeFieldPos = currentToken.getOwner().getEndpoint();
+		//Schrittecounte hochsetzen (Vorsicht zählt nur bis vor das Homefield)
+		currentToken.addMoves(currentToken.getRestSteps());
 		
-		destination.setToken(tokenToMove);
-		destination.setBarrier();
-		tokenToMove.moves += diceRoll;
-		tokenToMove.move(tokenPosition + diceRoll);
-
+		//Token von alter Position entfernen
+		this.field[currentToken.getPosition()][0].deleteToken(currentToken);
+		
+		//Token ins Homefield setzen
+		this.field[homeFieldPos][restSteps+1].setToken(currentToken);
+		
+	}
+	
+	/**
+	 * Läuft mit der Figur die gewürfelten Schritte ab und baut am Ziel eine Barriere
+	 * 
+	 * @param move - MoveObject das Informationen zum Zug trägt
+	 */
+	private void buildBarrier(Move move, int diceRoll){
+		Token currentToken = move.getToken();
+		
+		//Token vom aktuellen Platz entfernen
+		this.field[currentToken.getPosition()][0].deleteToken(currentToken);
+		
+		//Token auf neuen Platz setzen
+		this.field[currentToken.getPosition()+diceRoll][0].setToken(currentToken);
+		
+		//Token SchritteCounter erhöhen
+		currentToken.addMoves(diceRoll);
+		
+		//Barriere auf dem Feld bauen
+		this.field[currentToken.getPosition()][0].setBarrier();
 	}
 	
 	
-	private int findToken(ArrayList<Token> tokens, Token token){
-		if (tokens.get(0) == token){
+	private void simpleMoveToken(Move move, int diceRoll) {
+		int tokenPosition = move.getToken().getPosition();
+
+		ArrayList<Token> tokens = getField(tokenPosition).getToken();
+
+		Token tokenToMove = tokens.get(findToken(tokens, move.getToken()));
+
+		tokens.remove(findToken(tokens, move.getToken()));
+
+		getField(tokenPosition).setBarrier();
+
+		Field destination = getField(tokenPosition + diceRoll);
+
+		destination.setToken(tokenToMove);
+		destination.setBarrier();
+		tokenToMove.moves += diceRoll;
+		tokenToMove.moveTo(tokenPosition + diceRoll);
+
+	}
+
+	private int findToken(ArrayList<Token> tokens, Token token) {
+		if (tokens.get(0) == token) {
 			return 0;
 		} else {
 			return 1;
 		}
-		
+
 	}
 
 	private void moveToStart(Move move) {
@@ -170,7 +259,7 @@ public class Board {
 
 		startField.setToken(tokenToMove);
 		tokenToMove.moves++;
-		tokenToMove.move(startField.getIndex());
+		tokenToMove.moveTo(startField.getIndex());
 
 	}
 
@@ -188,5 +277,83 @@ public class Board {
 			}
 		}
 		return !isEmpty;
+	}
+	
+	/**
+	 * Setzt die Koordinaten zur Ausgabe auf das Spielfeld
+	 */
+	private void setCoords(){
+		this.field[0][0].setFieldKoord(0, 4);
+		this.field[1][0].setFieldKoord(1, 4);
+		this.field[2][0].setFieldKoord(2, 4);
+		this.field[3][0].setFieldKoord(3, 4);
+		this.field[4][0].setFieldKoord(4, 4);
+		
+		this.field[5][0].setFieldKoord(4, 3);
+		this.field[6][0].setFieldKoord(4, 2);
+		this.field[7][0].setFieldKoord(4, 1);
+		this.field[8][0].setFieldKoord(4, 0);
+		
+		this.field[9][0].setFieldKoord(5, 0);
+		//Zielfelder Spieler 2
+		this.field[9][1].setFieldKoord(5, 1);
+		this.field[9][2].setFieldKoord(5, 2);
+		this.field[9][3].setFieldKoord(5, 3);
+		this.field[9][4].setFieldKoord(5, 4);
+		
+		this.field[10][0].setFieldKoord(6, 0);
+		this.field[11][0].setFieldKoord(6, 1);
+		this.field[12][0].setFieldKoord(6, 2);
+		this.field[13][0].setFieldKoord(6, 3);
+		this.field[14][0].setFieldKoord(6, 4);
+		
+		this.field[15][0].setFieldKoord(7, 4);
+		this.field[16][0].setFieldKoord(8, 4);
+		this.field[17][0].setFieldKoord(9, 4);
+		this.field[18][0].setFieldKoord(10, 4);
+		
+		this.field[19][0].setFieldKoord(10, 5);
+		//Zielfelder Spieler 3
+		this.field[19][1].setFieldKoord(9, 5);
+		this.field[19][2].setFieldKoord(8, 5);
+		this.field[19][3].setFieldKoord(7, 5);
+		this.field[19][4].setFieldKoord(6, 5);
+		
+		this.field[20][0].setFieldKoord(10, 6);
+		this.field[21][0].setFieldKoord(9, 6);
+		this.field[22][0].setFieldKoord(8, 6);
+		this.field[23][0].setFieldKoord(7, 6);
+		this.field[24][0].setFieldKoord(6, 6);
+		
+		this.field[25][0].setFieldKoord(6, 7);
+		this.field[26][0].setFieldKoord(6, 8);
+		this.field[27][0].setFieldKoord(6, 9);
+		this.field[28][0].setFieldKoord(6, 10);
+		
+		this.field[29][0].setFieldKoord(5, 10);
+		//Zielfelder Spieler 4
+		this.field[29][1].setFieldKoord(5, 9);
+		this.field[29][2].setFieldKoord(5, 8);
+		this.field[29][3].setFieldKoord(5, 7);
+		this.field[29][4].setFieldKoord(5, 6);
+		
+		this.field[30][0].setFieldKoord(4, 10);
+		this.field[31][0].setFieldKoord(4, 9);
+		this.field[32][0].setFieldKoord(4, 8);
+		this.field[33][0].setFieldKoord(4, 7);
+		this.field[34][0].setFieldKoord(4, 6);
+		
+		this.field[35][0].setFieldKoord(3, 6);
+		this.field[36][0].setFieldKoord(2, 6);
+		this.field[37][0].setFieldKoord(1, 6);
+		this.field[38][0].setFieldKoord(0, 6);
+		
+		this.field[39][0].setFieldKoord(0, 5);
+		//Zielfelder Spieler 1
+		this.field[39][1].setFieldKoord(1, 5);
+		this.field[39][2].setFieldKoord(2, 5);
+		this.field[39][3].setFieldKoord(3, 5);
+		this.field[39][4].setFieldKoord(4, 5);
+		
 	}
 }

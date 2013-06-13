@@ -2,12 +2,16 @@ package hsma.ss2013.oot.groupproject.game;
 
 import hsma.ss2013.oot.groupproject.board.Board;
 import hsma.ss2013.oot.groupproject.board.Dice;
+import hsma.ss2013.oot.groupproject.board.DiceAccess;
+import hsma.ss2013.oot.groupproject.interfaces.MainMenu;
 import hsma.ss2013.oot.groupproject.player.Player;
+import hsma.ss2013.oot.groupproject.test.DiceTestDouble;
 import hsma.ss2013.oot.groupproject.ui.GameIO;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
-class Game implements MainMenu{
+class Game implements MainMenu {
 
     protected void play() throws InterruptedException {
 	// TODO: Wieso wirft die Methode diese Exception?
@@ -26,11 +30,19 @@ class Game implements MainMenu{
 		}
 
 		while (addThrows >= 0) {
-
-		    int diceRoll = Dice.getDice().roll();
+			
+			DiceAccess dice = Dice.getDice();
+			if(false){
+				//New Dice for testing
+				dice = new DiceTestDouble();
+				System.out.println("Nächster Würfel");
+				int next = new Scanner(System.in).nextInt();
+				((DiceTestDouble)dice).setNextRollResult(next);
+			}
+		    int diceRoll = dice.roll();
 
 		    System.out.println("Sie haben eine: " + diceRoll
-			    + " gewï¿½rfelt!");
+			    + " gewuerfelt!");
 
 		    ArrayList<Move> pMoves = GameRules.getInstance()
 			    .possibleMoves(diceRoll, player, board);
