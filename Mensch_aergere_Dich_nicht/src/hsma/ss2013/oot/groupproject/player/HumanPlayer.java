@@ -7,13 +7,12 @@ import java.util.ArrayList;
 
 public class HumanPlayer extends Player {
 
-	public HumanPlayer(int startpoint, int endpoint, char icon, String name) {
-		super(startpoint, endpoint, icon, name);
+    public HumanPlayer(int startpoint, int endpoint, char icon, String name) {
+	super(startpoint, endpoint, icon, name);
+    }
 
-	}
-
-	public Move chooseMove(ArrayList<Move> moves) {
-		return GameIO.getPlayerMove(moves);
-	}
-
+    @Override
+    public Move chooseMove(ArrayList<Move> moves) {
+	return GameIO.getPlayerMove(moves);
+    }
 }
