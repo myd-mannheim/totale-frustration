@@ -19,312 +19,368 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class GameIO {
 
-	private static String[][] printField = new String[11][11];
+    private static String[][] printField = new String[11][11];
 
-	public static void update(Board board) {
-		drawHomes(board);
+    public static void update(Board board) {
+	drawHomes(board);
 
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				printField[i][j] = "-";
-			}
-		}
-
-		// Spielbrett printen
-		for (int i = 0; i < board.field.length; i++) {
-			// Feld an der aktuellen Position zwischenspeichern
-			Field tempField = board.field[i][0];
-
-			// Falls auf dem Feld keine Figur steht X ausgeben
-			if (tempField.getToken().size() == 0) {
-				printField[tempField.getXkoord()][tempField.getyKoord()] = "O";
-			//	printField[tempField.getXkoord()][tempField.getyKoord()] = "" + tempField.getIndex();
-			} else {
-				// Sonst Figuren ausgeben
-				printField[tempField.getXkoord()][tempField.getyKoord()] = ""
-						+ tempField.tokensToString();
-			}
-
-		}
-
-		// Homebretter ausgeben
-		for (int i = 9; i < 40; i += 10) {
-			for (int j = 1; j < 5; j++) {
-				House tempField = (House)board.field[i][j];
-				if (tempField.getToken().size() == 0) {
-					printField[tempField.getXkoord()][tempField.getyKoord()] = "X";
-				} else {
-					// Sonst Figuren ausgeben
-					printField[tempField.getXkoord()][tempField.getyKoord()] = ""
-							+ tempField.tokensToString();
-				}
-			}
-		}
-
-		// Spielfeld ausgeben
-		for (int i = 0; i < 11; i++) {
-			for (int j = 0; j < 11; j++) {
-				System.out.print(printField[j][i] + " ");
-			}
-			System.out.print("\n");
-		}
-		//System.out.println("\n");
+	for (int i = 0; i < 11; i++) {
+	    for (int j = 0; j < 11; j++) {
+		printField[i][j] = "-";
+	    }
 	}
 
-	/*
-	 * public static void update(Board board) { Field[][] field = board.field;
-	 * drawHomes(board); int row = 0; for (int r = 0; r < 4; r++) { for (int i =
-	 * row; i < (row + 10); i++) { Field curF = field[i][0]; if (curF.isEmpty())
-	 * { // System.out.printf("[ %d ]", curF.index); System.out.printf("[ %d ]",
-	 * curF.getIndex()); } else { ArrayList<Token> both = curF.getToken();
-	 * System.out.print("[ "); for (Token e : both) {
-	 * System.out.print(e.getIcon()); } System.out.print(" ]"); } if (i < 10) {
-	 * System.out.print(" "); } } row += 10; System.out.println();
-	 * 
-	 * for (int j = 1; j < 5; j++) { System.out
-	 * .print("                                                      "); //
-	 * System.out.printf("| %s |", field[row - 1][j].index);
-	 * System.out.printf("| %s |", field[row - 1][j].getIndex());
-	 * System.out.println(); } System.out.println(); } }
-	 */
+	// Spielbrett printen
+	for (int i = 0; i < board.field.length; i++) {
+	    // Feld an der aktuellen Position zwischenspeichern
+	    Field tempField = board.field[i][0];
 
-	public static void drawHomes(Board board) {
-		// Player[] players = board.players;
-		Player[] players = board.getPlayers();
-		System.out.println("Spieler Haeuser:");
+	    // Falls auf dem Feld keine Figur steht X ausgeben
+	    if (tempField.getToken().size() == 0) {
+		printField[tempField.getXkoord()][tempField.getyKoord()] = "O";
+		// printField[tempField.getXkoord()][tempField.getyKoord()] = ""
+		// + tempField.getIndex();
+	    } else {
+		// Sonst Figuren ausgeben
+		printField[tempField.getXkoord()][tempField.getyKoord()] = ""
+			+ tempField.tokensToString();
+	    }
 
-		for (int i = 0; i < players.length; i++) {
-			System.out.print("Spieler: " + players[i].getName() + "\t[ ");
-			for (int j = 0; j < players[i].getHome().size(); j++) {
-				System.out.print(players[i].getHome().get(j).getIcon() + " ");
-			}
-			System.out.print("]");
-			System.out.println();
-		}
-		System.out.println();
 	}
 
-	public static Move getPlayerMove(ArrayList<Move> moves) {
-		Scanner eingabe1 = new Scanner(System.in);
-		for (int i = 0; i < moves.size(); i++) {
-			System.out.printf("%d. Die Figur an der Stelle %d kann ", i + 1,
-					moves.get(i).getToken().getPosition());
-			switch (moves.get(i).getMoveType()) {
-			case SUSPEND:
-				System.out.println("nicht bewegt werden");
-				break;
-			case THROW:
-				System.out.println("eine Figur schmeissen");
-				break;
-			case FINISH:
-				System.out.println("ins Haus ruecken");
-				break;
-			case BARRIER:
-				System.out.println("eine Barriere errichten");
-				break;
-			case MOVE:
-				System.out.println("gerueckt werden");
-				break;
-			case START:
-				System.out.println("aufs Startfeld gesetzt werden");
-				break;
-			}
-		}
-		System.out.print("Welchen Zug moechten Sie durchfuehren?");
-		// TODO Eingabepruefung bei nur 1 moeglichen Option!
-		// (IndexOutOfBoundsException)
-		int chosenMove = eingabe1.nextInt();
-		return moves.get(chosenMove - 1);
-	}
-
-	/**
-	 * Modifizierte {@link #gameStart()} mit Erfassung von Spielern des Typs
-	 * {@link HumanPlayer} und {@link AIPlayer}. Wird von {@link GameIO}
-	 * aufgerufen.
-	 * 
-	 * @return Ergebnis-Array der
-	 *         {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])} - Methode
-	 */
-	public static Player[] gameStart() {
-		
-		int iconCounter = 35;
-
-		HumanPlayer[] hp = createHP(iconCounter);
-		AIPlayer[] aip;
-
-		int maxAIPlayerpossible = 4 - hp.length;
-
-		if (maxAIPlayerpossible == 0) {
-			aip = new AIPlayer[0]; // Wenn keine Computergegner möglich sind (da
-									// schon 4 menschliche Spieler, wird leeres
-									// Array übergeben
+	// Homebretter ausgeben
+	for (int i = 9; i < 40; i += 10) {
+	    for (int j = 1; j < 5; j++) {
+		House tempField = (House) board.field[i][j];
+		if (tempField.getToken().size() == 0) {
+		    printField[tempField.getXkoord()][tempField.getyKoord()] = "X";
 		} else {
-			aip = createAIP(maxAIPlayerpossible, iconCounter+hp.length, 10*hp.length);
+		    // Sonst Figuren ausgeben
+		    printField[tempField.getXkoord()][tempField.getyKoord()] = ""
+			    + tempField.tokensToString();
 		}
-
-		return mergePlayerTypes(hp, aip);
-	}
-	
-
-	/**
-	 * Private Methode fuer die Zusammenfuehrung der Objekte vom Typ HumanPlayer
-	 * und AIPlayer in ein gemeinsames Array. Wird nur innerhalb dieser Klasse
-	 * aufgerufen von {@link #gameStart()}.
-	 * 
-	 * Gibt das Array {} der menschlichen Spieler zurueck, wenn kein
-	 * Computergegner angemeldet wurde.
-	 * 
-	 * Gibt das Array der computergesteuerten Spieler zurueck, wenn kein
-	 * menschlicher Spieler angemeldet wurde.
-	 * 
-	 * Gibt das Array aller angemeldeten Spieler, wenn sowohl menschliche als
-	 * auch computergesteuerte Spieler angemeldet wurden.
-	 * 
-	 * @param player
-	 *            Liste vom Typ {@link Player} für Merge-Operation
-	 * @param hPlayers
-	 *            Array mit menschlichen Spielern
-	 * @param aiPlayers
-	 *            Array mit computergesteuerten Spielern
-	 * @return Array aller angemeldeten Spieler
-	 */
-	private static Player[] mergePlayerTypes(HumanPlayer[] hPlayers,
-			AIPlayer[] aiPlayers) {
-		final int hPlayerCount = hPlayers.length;
-		final int aiPlayerCount = aiPlayers.length;
-		if (hPlayerCount == 0) {
-			return aiPlayers;
-		}
-		if (aiPlayerCount == 0) {
-			return hPlayers;
-		}
-		List<Player> player = new ArrayList<Player>(hPlayers.length
-				+ aiPlayers.length);
-		Collections.addAll(player, hPlayers);
-		Collections.addAll(player, aiPlayers);
-		return player.toArray(new Player[player.size()]);
+	    }
 	}
 
-	/**
-	 * Private Methode zum Ermitteln der gewuenschten Anzahl computergesteuerter
-	 * Spieler vom Typ {@link AIPlayer}. Wird nur innerhalb dieser Klasse
-	 * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
-	 * Überprüft auch, ob versucht wird, mehr als 4 Computergegner zu erstellen.
-	 * Erstellt automatisch Bezeichnungen
-	 * 
-	 * @param name
-	 *            für die computergesteuerten Spieler.
-	 * 
-	 * @return Array aller angemeldeten menschlichen Spieler
-	 */
-	private static AIPlayer[] createAIP(int maxPossibleAIPlayers, int iconCounter, int nextStartPoint) {
-		Scanner eingabe = new Scanner(System.in);
-		Scanner eingabeString = new Scanner(System.in);
-		System.out.print("Wie viele Computergegner sollen erstellt werden? ");
-		int aipCount = eingabe.nextInt();
-		if (aipCount <= maxPossibleAIPlayers) {
-			AIPlayer[] aiplayers = new AIPlayer[aipCount];
-			//int startpoint = 0;
-			int endpoint = 52;
-			AtomicLong idCounter = new AtomicLong();
+	// Spielfeld ausgeben
+	for (int i = 0; i < 11; i++) {
+	    for (int j = 0; j < 11; j++) {
+		System.out.print(printField[j][i] + " ");
+	    }
+	    System.out.print("\n");
+	}
+	// System.out.println("\n");
+    }
 
-			for (int i = 0; i < aipCount; i++) {
-				String name = "CPU_"
-						+ String.valueOf(idCounter.getAndIncrement());
-				System.out.printf("Name des %d. Computergegners: " + name,
-						i + 1);
-				System.out.println();
-				AIPlayer aiplayer = new AIPlayer(nextStartPoint, endpoint,
-						((char) (i + iconCounter)), name);
-				nextStartPoint += 10;
-				if (i == 0) {
-					endpoint = 40;
-				} else {
-					endpoint += 4;
-				}
-				aiplayers[i] = aiplayer;
-			}
-			System.out.println();
-			return aiplayers;
-		} else
-			System.out.println("Es koennen maximal " + maxPossibleAIPlayers
-					+ " Computerspieler erstellt werden!");
-		return createAIP(maxPossibleAIPlayers, iconCounter, nextStartPoint);
+    /*
+     * public static void update(Board board) { Field[][] field = board.field;
+     * drawHomes(board); int row = 0; for (int r = 0; r < 4; r++) { for (int i =
+     * row; i < (row + 10); i++) { Field curF = field[i][0]; if (curF.isEmpty())
+     * { // System.out.printf("[ %d ]", curF.index); System.out.printf("[ %d ]",
+     * curF.getIndex()); } else { ArrayList<Token> both = curF.getToken();
+     * System.out.print("[ "); for (Token e : both) {
+     * System.out.print(e.getIcon()); } System.out.print(" ]"); } if (i < 10) {
+     * System.out.print(" "); } } row += 10; System.out.println();
+     * 
+     * for (int j = 1; j < 5; j++) { System.out
+     * .print("                                                      "); //
+     * System.out.printf("| %s |", field[row - 1][j].index);
+     * System.out.printf("| %s |", field[row - 1][j].getIndex());
+     * System.out.println(); } System.out.println(); } }
+     */
+
+    public static void drawHomes(Board board) {
+	// Player[] players = board.players;
+	Player[] players = board.getPlayers();
+	System.out.println("Spieler Haeuser:");
+
+	for (int i = 0; i < players.length; i++) {
+	    System.out.print("Spieler: " + players[i].getName() + "\t[ ");
+	    for (int j = 0; j < players[i].getHome().size(); j++) {
+		System.out.print(players[i].getHome().get(j).getIcon() + " ");
+	    }
+	    System.out.print("]");
+	    System.out.println();
+	}
+	System.out.println();
+    }
+
+    public static Move getPlayerMove(ArrayList<Move> moves) {
+	Scanner eingabe = new Scanner(System.in);
+	for (int i = 0; i < moves.size(); i++) {
+	    System.out.printf("%d. Die Figur an der Stelle %d kann ", i + 1,
+		    moves.get(i).getToken().getPosition());
+	    switch (moves.get(i).getMoveType()) {
+	    case SUSPEND:
+		System.out.println("nicht bewegt werden");
+		break;
+	    case THROW:
+		System.out.println("eine Figur schmeissen");
+		break;
+	    case FINISH:
+		System.out.println("ins Haus ruecken");
+		break;
+	    case BARRIER:
+		System.out.println("eine Barriere errichten");
+		break;
+	    case MOVE:
+		System.out.println("gerueckt werden");
+		break;
+	    case START:
+		System.out.println("aufs Startfeld gesetzt werden");
+		break;
+	    }
+	}
+	System.out.print("Welchen Zug moechten Sie durchfuehren?");
+
+	int chosenMove;
+	while (true) {
+	    String move = eingabe.nextLine();
+	    if (isInt(move)) {
+		chosenMove = Integer.parseInt(move);
+		if (chosenMove >= 1 && chosenMove <= 4) {
+		    // TODO Eingabepruefung bei nur 1 moeglichen Option!
+		    // (IndexOutOfBoundsException)
+		    return moves.get(chosenMove - 1);
+		} else {
+		    System.out
+			    .println("Bitte geben Sie eine Zahl zwischen 1 und 4 ein.");
+		}
+	    } else {
+		System.out.println("Bitte geben Sie eine positive Zahl ein.");
+	    }
+	}
+    }
+
+    /**
+     * Modifizierte {@link #gameStart()} mit Erfassung von Spielern des Typs
+     * {@link HumanPlayer} und {@link AIPlayer}. Wird von {@link GameIO}
+     * aufgerufen.
+     * 
+     * @return Ergebnis-Array der
+     *         {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])} - Methode
+     */
+    public static Player[] gameStart() {
+
+	int iconCounter = 35;
+
+	HumanPlayer[] hp = createHP(iconCounter);
+	AIPlayer[] aip;
+
+	int maxAIPlayerpossible = 4 - hp.length;
+
+	if (maxAIPlayerpossible == 0) {
+	    aip = new AIPlayer[0]; // Wenn keine Computergegner mï¿½glich sind (da
+				   // schon 4 menschliche Spieler, wird leeres
+				   // Array ï¿½bergeben
+	} else {
+	    aip = createAIP(maxAIPlayerpossible, iconCounter + hp.length,
+		    10 * hp.length);
 	}
 
-	/**
-	 * Private Methode zum Ermitteln der gewuenschten Anzahl menschlicher
-	 * Spieler vom Typ {@link #HumanPlayer}. Wird nur innerhalb dieser Klasse
-	 * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
-	 * Überprüft auch, ob versucht wird, mehr als 4 Spieler zu erstellen.
-	 * 
-	 * @return Array aller angemeldeten menschlichen Spieler
-	 */
-	private static HumanPlayer[] createHP(int iconCounter) {
-		Scanner eingabe = new Scanner(System.in);
-		Scanner eingabeString = new Scanner(System.in);
+	return mergePlayerTypes(hp, aip);
+    }
+
+    /**
+     * Private Methode fuer die Zusammenfuehrung der Objekte vom Typ HumanPlayer
+     * und AIPlayer in ein gemeinsames Array. Wird nur innerhalb dieser Klasse
+     * aufgerufen von {@link #gameStart()}.
+     * 
+     * Gibt das Array {} der menschlichen Spieler zurueck, wenn kein
+     * Computergegner angemeldet wurde.
+     * 
+     * Gibt das Array der computergesteuerten Spieler zurueck, wenn kein
+     * menschlicher Spieler angemeldet wurde.
+     * 
+     * Gibt das Array aller angemeldeten Spieler, wenn sowohl menschliche als
+     * auch computergesteuerte Spieler angemeldet wurden.
+     * 
+     * @param player
+     *            Liste vom Typ {@link Player} fï¿½r Merge-Operation
+     * @param hPlayers
+     *            Array mit menschlichen Spielern
+     * @param aiPlayers
+     *            Array mit computergesteuerten Spielern
+     * @return Array aller angemeldeten Spieler
+     */
+    private static Player[] mergePlayerTypes(HumanPlayer[] hPlayers,
+	    AIPlayer[] aiPlayers) {
+	final int hPlayerCount = hPlayers.length;
+	final int aiPlayerCount = aiPlayers.length;
+	if (hPlayerCount == 0) {
+	    return aiPlayers;
+	}
+	if (aiPlayerCount == 0) {
+	    return hPlayers;
+	}
+	List<Player> player = new ArrayList<Player>(hPlayers.length
+		+ aiPlayers.length);
+	Collections.addAll(player, hPlayers);
+	Collections.addAll(player, aiPlayers);
+	return player.toArray(new Player[player.size()]);
+    }
+
+    /**
+     * Private Methode zum Ermitteln der gewuenschten Anzahl computergesteuerter
+     * Spieler vom Typ {@link AIPlayer}. Wird nur innerhalb dieser Klasse
+     * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
+     * ï¿½berprï¿½ft auch, ob versucht wird, mehr als 4 Computergegner zu erstellen.
+     * Erstellt automatisch Bezeichnungen
+     * 
+     * @param name
+     *            fï¿½r die computergesteuerten Spieler.
+     * 
+     * @return Array aller angemeldeten menschlichen Spieler
+     */
+    private static AIPlayer[] createAIP(int maxPossibleAIPlayers,
+	    int iconCounter, int nextStartPoint) {
+	Scanner eingabeString = new Scanner(System.in);
+	System.out.print("Wie viele Computergegner sollen erstellt werden? ");
+	int aipCount;
+	while (true) {
+	    String count = eingabeString.nextLine();
+	    if (isInt(count)) {
+		aipCount = Integer.parseInt(count);
+		break;
+	    } else {
+		System.out.println("Bitte geben Sie eine positive Zahl ein.");
+	    }
+	}
+	if (aipCount <= maxPossibleAIPlayers) {
+	    AIPlayer[] aiplayers = new AIPlayer[aipCount];
+	    // int startpoint = 0;
+	    int endpoint = 52;
+	    AtomicLong idCounter = new AtomicLong();
+
+	    for (int i = 0; i < aipCount; i++) {
+		String name = "CPU_"
+			+ String.valueOf(idCounter.getAndIncrement());
+		System.out.printf("Name des %d. Computergegners: " + name,
+			i + 1);
 		System.out.println();
-		System.out.print("Wie viele Spieler spielen mit? ");
-		int hpCount = eingabe.nextInt();
-		if (hpCount <= 4) {
-			HumanPlayer[] hPlayers = new HumanPlayer[hpCount];
-			int startpoint = 0;
-			int endpoint = 52;
-			for (int i = 0; i < hpCount; i++) {
-				System.out.printf("Name des %d. Spielers: ", i + 1);
-				String name = eingabeString.nextLine();
-				HumanPlayer hPlayer = new HumanPlayer(startpoint, endpoint,
-						((char) (i + iconCounter)), name);
-				startpoint += 10;
-				if (i == 0) {
-					endpoint = 40;
-				} else {
-					endpoint += 4;
-				}
-				hPlayers[i] = hPlayer;
-			}
-			System.out.println();
-			return hPlayers;
-		} else
-			System.out
-					.println("Es koennen maximal 4 Computerspieler erstellt werden!");
-		return createHP(iconCounter);
-	}
-
-	public static void noMoves() {
-		Scanner eingabe = new Scanner(System.in);
-		System.out.println();
-		System.out.println("Keine Zuege moeglich! (Mit Enter bestaetigen)");
-		eingabe.nextLine();
-	}
-
-	public static int printOptions() {
-		Scanner eingabe = new Scanner(System.in);
-		System.out.println("Welche Aktion moechten Sie durchfuehren?");
-		System.out.println("1. Spielen");
-		System.out.println("2. Regeln anzeigen");
-		System.out.println("3. Spiel beenden");
-
-		while (true) {
-			int number = eingabe.nextInt();
-			// TODO: Buchstaben abfangen
-			if (number < 1 || number > 3) {
-				System.out
-						.println("Bitte geben Sie eine Zahl zwischen 1 und 3 ein.");
-			} else {
-				System.out.println("");
-				return number;
-			}
+		AIPlayer aiplayer = new AIPlayer(nextStartPoint, endpoint,
+			((char) (i + iconCounter)), name);
+		nextStartPoint += 10;
+		if (i == 0) {
+		    endpoint = 40;
+		} else {
+		    endpoint += 4;
 		}
-	}
+		aiplayers[i] = aiplayer;
+	    }
+	    System.out.println();
+	    return aiplayers;
+	} else
+	    System.out.println("Es koennen maximal " + maxPossibleAIPlayers
+		    + " Computerspieler erstellt werden!");
+	return createAIP(maxPossibleAIPlayers, iconCounter, nextStartPoint);
+    }
 
-	/**
-	 * Methode zur Konsolenausgabe der Spielregeln. Verweist auf
-	 * {@link RulesPrinter #printOutRules()}. Alle Spielregeln sind in
-	 * {@link RulesPrinter} ausgelagert, um einen möglichen Austausch der Regeln
-	 * zu vereinfachen.
-	 */
-	public static void printRules() {
-		RulesPrinter.printOutRules();
+    /**
+     * Private Methode zum Ermitteln der gewuenschten Anzahl menschlicher
+     * Spieler vom Typ {@link #HumanPlayer}. Wird nur innerhalb dieser Klasse
+     * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
+     * ï¿½berprï¿½ft auch, ob versucht wird, mehr als 4 Spieler zu erstellen.
+     * 
+     * @return Array aller angemeldeten menschlichen Spieler
+     */
+    private static HumanPlayer[] createHP(int iconCounter) {
+	Scanner eingabeString = new Scanner(System.in);
+	System.out.println();
+	System.out.print("Wie viele Spieler spielen mit? ");
+	int hpCount;
+	while (true) {
+	    String count = eingabeString.nextLine();
+	    if (isInt(count)) {
+		hpCount = Integer.parseInt(count);
+		break;
+	    } else {
+		System.out.println("Bitte geben Sie eine positive Zahl ein.");
+	    }
 	}
+	if (hpCount <= 4) {
+	    HumanPlayer[] hPlayers = new HumanPlayer[hpCount];
+	    int startpoint = 0;
+	    int endpoint = 52;
+	    for (int i = 0; i < hpCount; i++) {
+		System.out.printf("Name des %d. Spielers: ", i + 1);
+		String name = eingabeString.nextLine();
+		HumanPlayer hPlayer = new HumanPlayer(startpoint, endpoint,
+			((char) (i + iconCounter)), name);
+		startpoint += 10;
+		if (i == 0) {
+		    endpoint = 40;
+		} else {
+		    endpoint += 4;
+		}
+		hPlayers[i] = hPlayer;
+	    }
+	    System.out.println();
+	    return hPlayers;
+	} else
+	    System.out
+		    .println("Es koennen maximal 4 Computerspieler erstellt werden!");
+	return createHP(iconCounter);
+
+    }
+
+    public static void noMoves() {
+	Scanner eingabe = new Scanner(System.in);
+	System.out.println();
+	System.out.println("Keine Zuege moeglich! (Mit Enter bestaetigen)");
+	eingabe.nextLine();
+    }
+
+    /**
+     * Gibt das Hauptmenue aus und leitet die Benutzereingabe weiter
+     * 
+     * @return int 1, 2 oder 3
+     */
+    public static int printOptions() {
+	Scanner eingabe = new Scanner(System.in);
+	System.out.println("Welche Aktion moechten Sie durchfuehren?");
+	System.out.println("1. Spielen");
+	System.out.println("2. Regeln anzeigen");
+	System.out.println("3. Spiel beenden");
+
+	while (true) {
+	    String text = eingabe.nextLine();
+	    if (isInt(text)) {
+		int number = Integer.parseInt(text);
+		if (number < 1 || number > 3) {
+		    System.out
+			    .println("Bitte geben Sie eine Zahl zwischen 1 und 3 ein.");
+		} else {
+		    System.out.println("");
+		    return number;
+		}
+	    } else {
+		System.out
+			.println("Bitte geben Sie eine Zahl zwischen 1 und 3 ein.");
+	    }
+	}
+    }
+
+    private static boolean isInt(String text) {
+	if (text != null) {
+	    boolean correct = true;
+	    for (int i = 0; i < text.length() && correct; i++) {
+		if (text.charAt(i) < '0' || text.charAt(i) > '9') {
+		    correct = false;
+		}
+	    }
+	    return correct;
+	}
+	return false;
+    }
+
+    /**
+     * Methode zur Konsolenausgabe der Spielregeln. Verweist auf
+     * {@link RulesPrinter #printOutRules()}. Alle Spielregeln sind in
+     * {@link RulesPrinter} ausgelagert, um einen mï¿½glichen Austausch der Regeln
+     * zu vereinfachen.
+     */
+    public static void printRules() {
+	RulesPrinter.printOutRules();
+    }
 }
