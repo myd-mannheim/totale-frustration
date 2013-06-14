@@ -287,7 +287,7 @@ public class GameIO {
     private static HumanPlayer[] createHP(int iconCounter) {
 	Scanner eingabeString = new Scanner(System.in);
 	System.out.println();
-	System.out.print("Wie viele Spieler spielen mit? ");
+	System.out.print("Wie viele menschliche Spieler spielen mit? ");
 	int hpCount;
 	while (true) {
 	    String count = eingabeString.nextLine();

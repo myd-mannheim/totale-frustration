@@ -22,23 +22,23 @@ class Game implements MainMenu {
 
 	    for (int i = 0; i < players.length; i++) {
 		Player player = players[i];
-		System.out.printf("%s am Zug %n", player.getName());
-		System.out.println();
+
 		int addThrows = 0;
 		if (player.isFullHome()) {
 		    addThrows = 2;
 		}
 
 		while (addThrows >= 0) {
-			
-			DiceAccess dice = Dice.getDice();
-			if(false){
-				//New Dice for testing
-				dice = new DiceTestDouble();
-				System.out.println("Nächster Würfel");
-				int next = new Scanner(System.in).nextInt();
-				((DiceTestDouble)dice).setNextRollResult(next);
-			}
+		    System.out.printf("%s am Zug %n", player.getName());
+		    System.out.println();
+		    DiceAccess dice = Dice.getDice();
+		    if (false) {
+			// New Dice for testing
+			dice = new DiceTestDouble();
+			System.out.println("Nï¿½chster Wï¿½rfel");
+			int next = new Scanner(System.in).nextInt();
+			((DiceTestDouble) dice).setNextRollResult(next);
+		    }
 		    int diceRoll = dice.roll();
 
 		    System.out.println("Sie haben eine: " + diceRoll
