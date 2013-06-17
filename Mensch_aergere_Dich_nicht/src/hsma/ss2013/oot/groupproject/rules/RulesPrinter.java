@@ -4,6 +4,15 @@ public abstract class RulesPrinter {
 
     public static void printOutRules() {
 	System.out.println("_______________________________________________________________________________________________");
+	System.out.println("");
+	System.out.println("Ziel des Spiels:");
+	System.out.println("");
+	System.out.println("Das Ziel des Spiels besteht darin, alle vier eigenen Spielfiguren von seinem Startfeld auf");
+	System.out.println("die Zielfelder zu ziehen. Dazu muss jede Figur das Spielbrett einmal umrunden.");
+	System.out.println("Das Spiel endet, wenn ein Spieler seine vier Figuren im Zielfeld untergebracht hat.");
+	System.out.println("");
+	System.out.println("_______________________________________________________________________________________________");
+	System.out.println("");
 	System.out.println("Spielregeln:");
 	System.out.println("");
 	System.out.println("Wer eine Sechs wuerfelt, muss eine eigene Spielfigur aus der Startposition");
@@ -26,6 +35,7 @@ public abstract class RulesPrinter {
 	System.out.println("Die Anzahl der Augen eines Wurfs duerfen nicht auf mehrere Spielfiguren verteilt werden.");
 	System.out.println("");
 	System.out.println("_______________________________________________________________________________________________");
+	System.out.println("");
 	System.out.println("Sonderregeln:");
 	System.out.println("");
 	System.out.println("1. Hat ein Spieler ueberhaupt keine Spielfigur auf dem Spielfeld (trifft bei Spielbeginn auf");
@@ -39,7 +49,7 @@ public abstract class RulesPrinter {
 	System.out.println("Barriere bilden, koennen nicht geschlagen werden. Die Barriere bleibt so lange bestehen");
 	System.out.println("bis eine Spielfigur weitergezogen wird bzw. werden muss.");
 	System.out.println("");
-	System.out.println("");
 	System.out.println("_______________________________________________________________________________________________");
+	System.out.println("");
     }
 }

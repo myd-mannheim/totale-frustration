@@ -148,30 +148,44 @@ public class Board {
 	 */
 	private void throwToken(Move move, int diceRoll){
 		Token attackingToken = move.getToken();
-		int targetField = attackingToken.getPosition() + diceRoll;
+		
+		
+		int targetField = 0;
+		// WENN ÜBER 39 GEZOGEN WIRD MUSS ZURÜCK AUF 1 gegangen werden
+		if(attackingToken.getPosition() + diceRoll < 39){
+			targetField = attackingToken.getPosition() + diceRoll;
+		} else {
+			targetField  = ((attackingToken.getPosition() + diceRoll) % 39); 
+		}
+
+		
 		
 		//Liste mit Tokens auf dem Zielfeld
 		ArrayList<Token> tokensToThrow = this.field[targetField][0].getToken();
-		
-		//Iterator erstellen und über die Tokenliste iterieren
-		Iterator<Token> iterator = tokensToThrow.iterator();
-		while(iterator.hasNext()){
-			Token tempToken = iterator.next();
-			
-			//Prüfen ob die Tokens dem selben Spieler gehören
-			if(tempToken.getOwner() != attackingToken.getOwner()){
-				//Token zurück auf das Startfeld setzen
-				tempToken.moveTo(-1); //Stimmt -1?
-				//Token vom Feld nehmen
-				tokensToThrow.remove(tempToken);
-				//Schrittcounter auf 0 setzen
-				tempToken.setMovesToNull();	
-			}
-		}
-		
+		Token targetToken = tokensToThrow.get(0);
+		targetToken.moveTo(-1);
+		tokensToThrow.remove(targetToken);
+		targetToken.setMovesToNull();
+		targetToken.getOwner().moveIntoStart(targetToken);
+//		
+//		//Iterator erstellen und über die Tokenliste iterieren
+//		Iterator<Token> iterator = tokensToThrow.iterator();
+//		while(iterator.hasNext()){
+//			Token tempToken = iterator.next();
+//			
+//			//Prüfen ob die Tokens dem selben Spieler gehören
+//			if(tempToken.getOwner() != attackingToken.getOwner()){
+//				//Token zurück auf das Startfeld setzen
+//				tempToken.moveTo(-1); //Stimmt -1?
+//				//Token vom Feld nehmen
+//				tokensToThrow.remove(tempToken);
+//				//Schrittcounter auf 0 setzen
+//				tempToken.setMovesToNull();	
+//			}
+//		}
+//		
 		//Schlagende Figur aufs Spielfeld setzen und Schrittecounter erhöhen
-		attackingToken.addMoves(diceRoll);
-		this.field[targetField][0].setToken(attackingToken);
+		simpleMoveToken(move, diceRoll);
 	}
 	
 	/**
@@ -232,13 +246,20 @@ public class Board {
 		tokens.remove(findToken(tokens, move.getToken()));
 
 		getField(tokenPosition).setBarrier();
+		int destiny = 0;
+		// WENN ÜBER 39 GEZOGEN WIRD MUSS ZURÜCK AUF 1 gegangen werden
+		if(tokenPosition + diceRoll <= 39){
+			destiny = tokenPosition + diceRoll;
+		} else {
+			destiny = ((tokenPosition + diceRoll) % 39) - 1; 
+		}
 
-		Field destination = getField(tokenPosition + diceRoll);
+		Field destination = getField(destiny);
 
 		destination.setToken(tokenToMove);
 		destination.setBarrier();
 		tokenToMove.moves += diceRoll;
-		tokenToMove.moveTo(tokenPosition + diceRoll);
+		tokenToMove.moveTo(destiny);
 
 	}
 
