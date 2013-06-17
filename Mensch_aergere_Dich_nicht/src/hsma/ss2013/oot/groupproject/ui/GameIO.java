@@ -114,6 +114,8 @@ public class GameIO {
 	    case SUSPEND:
 		System.out.println("nicht bewegt werden");
 		break;
+	    
+	    //TODO
 	    case THROW:
 		System.out.println("eine Figur schmeissen");
 		break;
