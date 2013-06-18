@@ -2,7 +2,6 @@ package hsma.ss2013.oot.groupproject.player;
 
 import hsma.ss2013.oot.groupproject.ai.AI;
 import hsma.ss2013.oot.groupproject.game.Move;
-import hsma.ss2013.oot.groupproject.ui.GameIO;
 
 import java.util.ArrayList;
 

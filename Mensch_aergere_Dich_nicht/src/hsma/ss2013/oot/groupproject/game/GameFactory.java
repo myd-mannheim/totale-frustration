@@ -4,7 +4,7 @@ import hsma.ss2013.oot.groupproject.interfaces.MainMenu;
 
 public class GameFactory {
 
-    public static MainMenu getGame(){
+    public static MainMenu getGame() {
 	return new Game();
     }
 

@@ -3,7 +3,6 @@ package hsma.ss2013.oot.groupproject.ui;
 import hsma.ss2013.oot.groupproject.board.Board;
 import hsma.ss2013.oot.groupproject.board.Field;
 import hsma.ss2013.oot.groupproject.board.House;
-import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.game.Move;
 import hsma.ss2013.oot.groupproject.player.AIPlayer;
 import hsma.ss2013.oot.groupproject.player.HumanPlayer;
@@ -12,7 +11,6 @@ import hsma.ss2013.oot.groupproject.rules.RulesPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
@@ -92,6 +90,8 @@ public class GameIO {
     public static void drawHomes(Board board) {
 	// Player[] players = board.players;
 	Player[] players = board.getPlayers();
+	System.out
+		.println("***************************************************");
 	System.out.println("Spieler Haeuser:");
 
 	for (int i = 0; i < players.length; i++) {
@@ -102,9 +102,12 @@ public class GameIO {
 	    System.out.print("]");
 	    System.out.println();
 	}
+	System.out
+		.println("***************************************************");
 	System.out.println();
     }
 
+    @SuppressWarnings("resource")
     public static Move getPlayerMove(ArrayList<Move> moves) {
 	Scanner eingabe = new Scanner(System.in);
 	for (int i = 0; i < moves.size(); i++) {
@@ -114,8 +117,7 @@ public class GameIO {
 	    case SUSPEND:
 		System.out.println("nicht bewegt werden");
 		break;
-	    
-	    //TODO
+	    // TODO
 	    case THROW:
 		System.out.println("eine Figur schmeissen");
 		break;
@@ -134,7 +136,6 @@ public class GameIO {
 	    }
 	}
 	System.out.print("Welchen Zug moechten Sie durchfuehren?");
-
 	int chosenMove;
 	while (true) {
 	    String move = eingabe.nextLine();
@@ -163,23 +164,18 @@ public class GameIO {
      *         {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])} - Methode
      */
     public static Player[] gameStart() {
-
 	int iconCounter = 35;
-
 	HumanPlayer[] hp = createHP(iconCounter);
 	AIPlayer[] aip;
-
 	int maxAIPlayerpossible = 4 - hp.length;
-
 	if (maxAIPlayerpossible == 0) {
-	    aip = new AIPlayer[0]; // Wenn keine Computergegner m�glich sind (da
-				   // schon 4 menschliche Spieler, wird leeres
-				   // Array �bergeben
+	    aip = new AIPlayer[0];
+	    // Wenn keine Computergegner moeglich sind (da schon 4 menschliche
+	    // Spieler, wird leeres Array uebergeben
 	} else {
 	    aip = createAIP(maxAIPlayerpossible, iconCounter + hp.length,
 		    10 * hp.length);
 	}
-
 	return mergePlayerTypes(hp, aip);
     }
 
@@ -188,17 +184,17 @@ public class GameIO {
      * und AIPlayer in ein gemeinsames Array. Wird nur innerhalb dieser Klasse
      * aufgerufen von {@link #gameStart()}.
      * 
-     * Gibt das Array {} der menschlichen Spieler zurueck, wenn kein
-     * Computergegner angemeldet wurde.
+     * Gibt das Array {@code hPlayer[]} der menschlichen Spieler zurueck, wenn
+     * kein Computergegner angemeldet wurde.
      * 
-     * Gibt das Array der computergesteuerten Spieler zurueck, wenn kein
-     * menschlicher Spieler angemeldet wurde.
+     * Gibt das Array {@code aiPlayer[]} der computergesteuerten Spieler
+     * zurueck, wenn kein menschlicher Spieler angemeldet wurde.
      * 
-     * Gibt das Array aller angemeldeten Spieler, wenn sowohl menschliche als
-     * auch computergesteuerte Spieler angemeldet wurden.
+     * Gibt das Array {@code Player[]}aller angemeldeten Spieler, wenn sowohl
+     * menschliche als auch computergesteuerte Spieler angemeldet wurden.
      * 
      * @param player
-     *            Liste vom Typ {@link Player} f�r Merge-Operation
+     *            Liste vom Typ {@link Player} fuer Merge-Operation
      * @param hPlayers
      *            Array mit menschlichen Spielern
      * @param aiPlayers
@@ -226,14 +222,15 @@ public class GameIO {
      * Private Methode zum Ermitteln der gewuenschten Anzahl computergesteuerter
      * Spieler vom Typ {@link AIPlayer}. Wird nur innerhalb dieser Klasse
      * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
-     * �berpr�ft auch, ob versucht wird, mehr als 4 Computergegner zu erstellen.
-     * Erstellt automatisch Bezeichnungen
+     * ueberprueft auch, ob versucht wird, mehr als 4 Computergegner zu
+     * erstellen. Erstellt automatisch Bezeichnungen
      * 
      * @param name
-     *            f�r die computergesteuerten Spieler.
+     *            fuer die computergesteuerten Spieler
      * 
      * @return Array aller angemeldeten menschlichen Spieler
      */
+    @SuppressWarnings("resource")
     private static AIPlayer[] createAIP(int maxPossibleAIPlayers,
 	    int iconCounter, int nextStartPoint) {
 	Scanner eingabeString = new Scanner(System.in);
@@ -282,10 +279,11 @@ public class GameIO {
      * Private Methode zum Ermitteln der gewuenschten Anzahl menschlicher
      * Spieler vom Typ {@link #HumanPlayer}. Wird nur innerhalb dieser Klasse
      * aufgerufen von {@link #mergePlayerTypes(HumanPlayer[], AIPlayer[])}.
-     * �berpr�ft auch, ob versucht wird, mehr als 4 Spieler zu erstellen.
+     * ueberprueft auch, ob versucht wird, mehr als 4 Spieler zu erstellen.
      * 
      * @return Array aller angemeldeten menschlichen Spieler
      */
+    @SuppressWarnings("resource")
     private static HumanPlayer[] createHP(int iconCounter) {
 	Scanner eingabeString = new Scanner(System.in);
 	System.out.println();
@@ -323,9 +321,12 @@ public class GameIO {
 	    System.out
 		    .println("Es koennen maximal 4 Computerspieler erstellt werden!");
 	return createHP(iconCounter);
-
     }
 
+    /**
+     * Methode zur Benutzerinformation, wenn keine Zuege moeglich sind
+     */
+    @SuppressWarnings("resource")
     public static void noMoves() {
 	Scanner eingabe = new Scanner(System.in);
 	System.out.println();
@@ -334,10 +335,31 @@ public class GameIO {
     }
 
     /**
+     * Private Methode zur Ueberpuefung der Eingaben auf Integer-Werte.
+     * 
+     * @param text
+     *            der uebergebene Text {@literal String}
+     * @return true, wenn uebergebener String eine Zahl ist; ansonsten false
+     */
+    private static boolean isInt(String text) {
+	if (text != null) {
+	    boolean correct = true;
+	    for (int i = 0; i < text.length() && correct; i++) {
+		if (text.charAt(i) < '0' || text.charAt(i) > '9') {
+		    correct = false;
+		}
+	    }
+	    return correct;
+	}
+	return false;
+    }
+
+    /**
      * Gibt das Hauptmenue aus und leitet die Benutzereingabe weiter
      * 
      * @return int 1, 2 oder 3
      */
+    @SuppressWarnings("resource")
     public static int printOptions() {
 	Scanner eingabe = new Scanner(System.in);
 	System.out.println("Welche Aktion moechten Sie durchfuehren?");
@@ -363,24 +385,11 @@ public class GameIO {
 	}
     }
 
-    private static boolean isInt(String text) {
-	if (text != null) {
-	    boolean correct = true;
-	    for (int i = 0; i < text.length() && correct; i++) {
-		if (text.charAt(i) < '0' || text.charAt(i) > '9') {
-		    correct = false;
-		}
-	    }
-	    return correct;
-	}
-	return false;
-    }
-
     /**
      * Methode zur Konsolenausgabe der Spielregeln. Verweist auf
      * {@link RulesPrinter #printOutRules()}. Alle Spielregeln sind in
-     * {@link RulesPrinter} ausgelagert, um einen m�glichen Austausch der Regeln
-     * zu vereinfachen.
+     * {@link RulesPrinter} ausgelagert, um einen moeglichen Austausch der
+     * Regeln zu vereinfachen.
      */
     public static void printRules() {
 	RulesPrinter.printOutRules();
