@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.naming.NameAlreadyBoundException;
+
 public class GameIO {
 
     private static String[][] printField = new String[11][11];
@@ -240,7 +242,12 @@ public class GameIO {
 	    String count = eingabeString.nextLine();
 	    if (isInt(count)) {
 		aipCount = Integer.parseInt(count);
-		break;
+		if (aipCount == 1 && maxPossibleAIPlayers == 4) {
+		    System.out
+			    .println("Es muessen mindestens 2 Spieler gegeneinander spielen.");
+		} else {
+		    break;
+		}
 	    } else {
 		System.out.println("Bitte geben Sie eine positive Zahl ein.");
 	    }
@@ -304,9 +311,19 @@ public class GameIO {
 	    int endpoint = 52;
 	    for (int i = 0; i < hpCount; i++) {
 		System.out.printf("Name des %d. Spielers: ", i + 1);
-		String name = eingabeString.nextLine();
-		HumanPlayer hPlayer = new HumanPlayer(startpoint, endpoint,
-			((char) (i + iconCounter)), name);
+		HumanPlayer hPlayer;
+		// richtigen Namen eingeben
+		while (true) {
+		    String name = eingabeString.nextLine();
+		    if (nameAvailable(hPlayers, name)) {
+			hPlayer = new HumanPlayer(startpoint, endpoint,
+				((char) (i + iconCounter)), name);
+			break;
+		    } else {
+			System.out
+				.println("Bitte geben Sie einen gueltigen Namen ein.");
+		    }
+		}
 		startpoint += 10;
 		if (i == 0) {
 		    endpoint = 40;
@@ -319,8 +336,23 @@ public class GameIO {
 	    return hPlayers;
 	} else
 	    System.out
-		    .println("Es koennen maximal 4 Computerspieler erstellt werden!");
+		    .println("Es koennen maximal 4 menschliche Spieler erstellt werden!");
 	return createHP(iconCounter);
+    }
+
+    private static boolean nameAvailable(HumanPlayer[] player, String name) {
+	if (name.length() != 0) {
+	    for (int i = 0; i < player.length; i++) {
+		if (player[i] != null) {
+		    if (player[i].getName().equals(name)) {
+			return false;
+		    }
+		}
+	    }
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     /**
@@ -343,13 +375,15 @@ public class GameIO {
      */
     private static boolean isInt(String text) {
 	if (text != null) {
-	    boolean correct = true;
-	    for (int i = 0; i < text.length() && correct; i++) {
-		if (text.charAt(i) < '0' || text.charAt(i) > '9') {
-		    correct = false;
+	    if (text.length() > 0) {
+		boolean correct = true;
+		for (int i = 0; i < text.length() && correct; i++) {
+		    if (text.charAt(i) < '0' || text.charAt(i) > '9') {
+			correct = false;
+		    }
 		}
+		return correct;
 	    }
-	    return correct;
 	}
 	return false;
     }
