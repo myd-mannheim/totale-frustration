@@ -18,7 +18,7 @@ public class AI {
 	// die Reihenfolge spiegelt die Priorisierung wieder, Indexplatz [0] heiﬂt
 	// hohe Prio
 	private MoveType[] moveTypeDefaultOrder = { MoveType.THROW,
-			MoveType.FINISH, MoveType.START, MoveType.MOVE, MoveType.SUSPEND };
+			MoveType.FINISH, MoveType.START, MoveType.MOVE, MoveType.BARRIER, MoveType.SUSPEND };
 
 	// 2D-Array zur Bewertung aller moeglichen Zuege aller Tokens eines Spielers
 	private boolean[][] rating = new boolean[4][MoveType.values().length];
@@ -81,8 +81,11 @@ public class AI {
 					case MOVE:
 						this.rating[tokenCount][3] = true;
 						break;
+					case BARRIER:
+					    	this.rating[tokenCount][4] = true;
+					    	break;
 					case SUSPEND:
-						this.rating[tokenCount][4] = true;
+						this.rating[tokenCount][5] = true;
 						break;
 					default:
 						break;

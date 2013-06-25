@@ -37,9 +37,7 @@ public class GameIO {
 
 	    // Falls auf dem Feld keine Figur steht X ausgeben
 	    if (tempField.getToken().size() == 0) {
-		printField[tempField.getXkoord()][tempField.getyKoord()] = "O";
-		// printField[tempField.getXkoord()][tempField.getyKoord()] = ""
-		// + tempField.getIndex();
+		 printField[tempField.getXkoord()][tempField.getyKoord()] = "O";
 	    } else {
 		// Sonst Figuren ausgeben
 		printField[tempField.getXkoord()][tempField.getyKoord()] = ""
@@ -53,7 +51,7 @@ public class GameIO {
 	    for (int j = 1; j < 5; j++) {
 		House tempField = (House) board.field[i][j];
 		if (tempField.getToken().size() == 0) {
-		    printField[tempField.getXkoord()][tempField.getyKoord()] = "X";
+		     printField[tempField.getXkoord()][tempField.getyKoord()] = "X";
 		} else {
 		    // Sonst Figuren ausgeben
 		    printField[tempField.getXkoord()][tempField.getyKoord()] = ""
@@ -69,28 +67,9 @@ public class GameIO {
 	    }
 	    System.out.print("\n");
 	}
-	// System.out.println("\n");
     }
 
-    /*
-     * public static void update(Board board) { Field[][] field = board.field;
-     * drawHomes(board); int row = 0; for (int r = 0; r < 4; r++) { for (int i =
-     * row; i < (row + 10); i++) { Field curF = field[i][0]; if (curF.isEmpty())
-     * { // System.out.printf("[ %d ]", curF.index); System.out.printf("[ %d ]",
-     * curF.getIndex()); } else { ArrayList<Token> both = curF.getToken();
-     * System.out.print("[ "); for (Token e : both) {
-     * System.out.print(e.getIcon()); } System.out.print(" ]"); } if (i < 10) {
-     * System.out.print(" "); } } row += 10; System.out.println();
-     * 
-     * for (int j = 1; j < 5; j++) { System.out
-     * .print("                                                      "); //
-     * System.out.printf("| %s |", field[row - 1][j].index);
-     * System.out.printf("| %s |", field[row - 1][j].getIndex());
-     * System.out.println(); } System.out.println(); } }
-     */
-
     public static void drawHomes(Board board) {
-	// Player[] players = board.players;
 	Player[] players = board.getPlayers();
 	System.out
 		.println("***************************************************");
@@ -144,8 +123,6 @@ public class GameIO {
 	    if (isInt(move)) {
 		chosenMove = Integer.parseInt(move);
 		if (chosenMove >= 1 && chosenMove <= 4) {
-		    // TODO Eingabepruefung bei nur 1 moeglichen Option!
-		    // (IndexOutOfBoundsException)
 		    return moves.get(chosenMove - 1);
 		} else {
 		    System.out
@@ -254,8 +231,7 @@ public class GameIO {
 	}
 	if (aipCount <= maxPossibleAIPlayers) {
 	    AIPlayer[] aiplayers = new AIPlayer[aipCount];
-	    // int startpoint = 0;
-	    int endpoint = 52;
+	    int endpoint = 0;
 	    AtomicLong idCounter = new AtomicLong();
 
 	    for (int i = 0; i < aipCount; i++) {
@@ -264,14 +240,24 @@ public class GameIO {
 		System.out.printf("Name des %d. Computergegners: " + name,
 			i + 1);
 		System.out.println();
+		switch (nextStartPoint) {
+		case 0:
+		    endpoint = 39;
+		    break;
+		case 10:
+		    endpoint = 9;
+		    break;
+		case 20:
+		    endpoint = 19;
+		    break;
+		case 30:
+		    endpoint = 29;
+		    break;
+		}
 		AIPlayer aiplayer = new AIPlayer(nextStartPoint, endpoint,
 			((char) (i + iconCounter)), name);
-		nextStartPoint += 10;
-		if (i == 0) {
-		    endpoint = 40;
-		} else {
-		    endpoint += 4;
-		}
+		nextStartPoint += 10;		
+
 		aiplayers[i] = aiplayer;
 	    }
 	    System.out.println();
@@ -308,7 +294,7 @@ public class GameIO {
 	if (hpCount <= 4) {
 	    HumanPlayer[] hPlayers = new HumanPlayer[hpCount];
 	    int startpoint = 0;
-	    int endpoint = 52;
+	    int endpoint = 39;
 	    for (int i = 0; i < hpCount; i++) {
 		System.out.printf("Name des %d. Spielers: ", i + 1);
 		HumanPlayer hPlayer;
@@ -325,10 +311,19 @@ public class GameIO {
 		    }
 		}
 		startpoint += 10;
-		if (i == 0) {
-		    endpoint = 40;
-		} else {
-		    endpoint += 4;
+		/*
+		 * if (i == 0) { endpoint = 40; } else { endpoint += 4; }
+		 */
+		switch (startpoint) {
+		case 10:
+		    endpoint = 9;
+		    break;
+		case 20:
+		    endpoint = 19;
+		    break;
+		case 30:
+		    endpoint = 29;
+		    break;
 		}
 		hPlayers[i] = hPlayer;
 	    }

@@ -8,15 +8,18 @@ import hsma.ss2013.oot.groupproject.player.Player;
 import hsma.ss2013.oot.groupproject.ui.GameIO;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 class Game implements MainMenu {
 
     protected void play() throws InterruptedException {
-	// TODO: Wieso wirft die Methode diese Exception?
+	
+	boolean isFinished = false;
 
 	Player[] players = GameIO.gameStart();
 	Board board = new Board(players);
 	GameIO.update(board);
+	
 	do {
 
 	    for (int i = 0; i < players.length; i++) {
@@ -31,7 +34,15 @@ class Game implements MainMenu {
 		    System.out.printf("%s am Zug %n", player.getName());
 		    System.out.println();
 		    DiceAccess dice = Dice.getDice();
-		    int diceRoll = dice.roll();
+		    int diceRoll;
+		    if (false) {
+			dice = new hsma.ss2013.oot.groupproject.test.DiceTestDouble();
+			System.out.println("Naechster Wuerfelwurf:");
+			int roll = new Scanner(System.in).nextInt();
+			((hsma.ss2013.oot.groupproject.test.DiceTestDouble) dice)
+				.setNextRollResult(roll);
+		    }
+		    diceRoll = dice.roll();
 		    System.out.println("Sie haben eine: " + diceRoll
 			    + " gewuerfelt!");
 		    ArrayList<Move> pMoves = GameRules.getInstance()
@@ -47,10 +58,16 @@ class Game implements MainMenu {
 			addThrows = 0;
 		    }
 		    GameIO.update(board);
-		}
+		    
 
+		}
+		if (board.isFullHouse()) {
+		    isFinished = true;
+			break;
+		    }
 	    }
-	} while (!board.isFullHouse());
+
+	} while (!isFinished);
     }
 
     @Override
@@ -62,6 +79,9 @@ class Game implements MainMenu {
 	    case 1:
 		try {
 		    play();
+		    playing = false;
+		    System.out.println();
+		    System.out.println("Das Spiel ist beendet! Ein Spieler hat gewonnen.");
 		} catch (InterruptedException ex) {
 		    System.out.println("Sie haben das Spiel beendet.");
 		}

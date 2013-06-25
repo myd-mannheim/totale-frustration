@@ -19,9 +19,11 @@ public class Field {
 	return barrier;
     }
 
-    public void setBarrier() {
+    public void toggleBarrier() {
 	if (this.tokenList.size() == 2) {
 	    barrier = true;
+	}else {
+	    barrier = false;
 	}
     }
 

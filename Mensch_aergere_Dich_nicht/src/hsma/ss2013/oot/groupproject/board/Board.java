@@ -105,8 +105,9 @@ public class Board {
      *            - gewürfelte Zahl
      */
     public void moveToken(Move move, int diceRoll) {
-
+	
 	switch (move.getMoveType()) {
+	//TODO
 	case THROW:
 	    throwToken(move, diceRoll);
 	    break;
@@ -127,33 +128,6 @@ public class Board {
 
 	}
 
-	// else {
-	// int tokenMoves = getField(move.getIndex()).getToken().get(0).moves;
-	// ArrayList<Token> tokens = getField(move.getIndex()).getToken();
-	// Token tokenToMove = tokens.get(0);
-	//
-	// if (tokenMoves + diceRoll > 40) {
-	//
-	// tokens.remove(0);
-	// int movesToDo = 40 - tokenMoves;
-	// Field destination = getField(move.getIndex() + movesToDo);
-	// destination.setToken(tokenToMove);
-	// destination.setBarrier();
-	// movesToDo = diceRoll - movesToDo;
-	// destination = field[tokenToMove.getPosition()][movesToDo - 1];
-	// destination.setToken(tokenToMove);
-	// destination.setBarrier();
-	//
-	// } else {
-	// tokens.remove(0);
-	// getField(move.getIndex()).setBarrier();
-	// Field destination = getField(move.getIndex() + diceRoll);
-	// destination.setToken(tokenToMove);
-	// destination.setBarrier();
-	// tokenToMove.moves += diceRoll;
-	// tokenToMove.move(move.getIndex() + diceRoll);
-	// }
-	// }
     }
 
     /**
@@ -170,10 +144,10 @@ public class Board {
 
 	int targetField = 0;
 	// WENN ÜBER 39 GEZOGEN WIRD MUSS ZURÜCK AUF 1 gegangen werden
-	if (attackingToken.getPosition() + diceRoll < 39) {
+	if (attackingToken.getPosition() + diceRoll < 40) {
 	    targetField = attackingToken.getPosition() + diceRoll;
 	} else {
-	    targetField = ((attackingToken.getPosition() + diceRoll) % 39);
+	    targetField = ((attackingToken.getPosition() + diceRoll) % 40);
 	}
 
 	// Liste mit Tokens auf dem Zielfeld
@@ -183,23 +157,7 @@ public class Board {
 	tokensToThrow.remove(targetToken);
 	targetToken.setMovesToNull();
 	targetToken.getOwner().moveIntoStart(targetToken);
-	//
-	// //Iterator erstellen und über die Tokenliste iterieren
-	// Iterator<Token> iterator = tokensToThrow.iterator();
-	// while(iterator.hasNext()){
-	// Token tempToken = iterator.next();
-	//
-	// //Prüfen ob die Tokens dem selben Spieler gehören
-	// if(tempToken.getOwner() != attackingToken.getOwner()){
-	// //Token zurück auf das Startfeld setzen
-	// tempToken.moveTo(-1); //Stimmt -1?
-	// //Token vom Feld nehmen
-	// tokensToThrow.remove(tempToken);
-	// //Schrittcounter auf 0 setzen
-	// tempToken.setMovesToNull();
-	// }
-	// }
-	//
+	
 	// Schlagende Figur aufs Spielfeld setzen und Schrittecounter erhöhen
 	simpleMoveToken(move, diceRoll);
     }
@@ -227,7 +185,8 @@ public class Board {
 	this.field[currentToken.getPosition()][0].deleteToken(currentToken);
 
 	// Token ins Homefield setzen
-	this.field[homeFieldPos][restSteps + 1].setToken(currentToken);
+	this.field[homeFieldPos][restSteps].setToken(currentToken);
+	currentToken.addMoves(diceRoll);
 
     }
 
@@ -238,21 +197,8 @@ public class Board {
      * @param move
      *            - MoveObject das Informationen zum Zug trägt
      */
-    private void buildBarrier(Move move, int diceRoll) {
-	Token currentToken = move.getToken();
-
-	// Token vom aktuellen Platz entfernen
-	this.field[currentToken.getPosition()][0].deleteToken(currentToken);
-
-	// Token auf neuen Platz setzen
-	this.field[currentToken.getPosition() + diceRoll][0]
-		.setToken(currentToken);
-
-	// Token SchritteCounter erhöhen
-	currentToken.addMoves(diceRoll);
-
-	// Barriere auf dem Feld bauen
-	this.field[currentToken.getPosition()][0].setBarrier();
+    private void buildBarrier(Move move, int diceRoll) {	
+	simpleMoveToken(move, diceRoll);
     }
 
     /**
@@ -263,14 +209,14 @@ public class Board {
      */
     private void simpleMoveToken(Move move, int diceRoll) {
 	int tokenPosition = move.getToken().getPosition();
-
+	
 	ArrayList<Token> tokens = getField(tokenPosition).getToken();
 
 	Token tokenToMove = tokens.get(findToken(tokens, move.getToken()));
 
 	tokens.remove(findToken(tokens, move.getToken()));
-
-	getField(tokenPosition).setBarrier();
+	
+	getField(tokenPosition).toggleBarrier();
 	int destiny = 0;
 	// WENN ÜBER 39 GEZOGEN WIRD MUSS ZURÜCK AUF 1 gegangen werden
 	if (tokenPosition + diceRoll <= 39) {
@@ -280,7 +226,7 @@ public class Board {
 	}
 	Field destination = getField(destiny);
 	destination.setToken(tokenToMove);
-	destination.setBarrier();
+	destination.toggleBarrier();
 	tokenToMove.moves += diceRoll;
 	tokenToMove.moveTo(destiny);
 
@@ -300,10 +246,6 @@ public class Board {
      * 
      * @param move
      */
-    // TODO: Warum wird hier einer Methode, die sowieso nur bei einer einzigen
-    // Zugmoeglichkeit
-    // ausgeführt wird, ein {@link #Move}-Objekt mitgegeben anstatt z.B. des
-    // Spielers?
     private void moveToStart(Move move) {
 	Field startField = this.getField(move.getOwner().getStartpoint());
 	ArrayList<Token> tokenHome = move.getOwner().getHome();
@@ -320,19 +262,17 @@ public class Board {
      * @return
      */
     public boolean isFullHouse() {
-	boolean isEmpty = false;
+	
 	for (int i = 9; i <= 39; i += 10) {
-	    for (int j = 1; j < 5; j++) {
-		if (field[i][j].isEmpty()) {
-		    isEmpty = true;
-		    break;
+	   
+		if ((!field[i][1].isEmpty()) &&(!field[i][2].isEmpty()) &&(!field[i][3].isEmpty()) &&(!field[i][4].isEmpty())) {
+		    
+		   return true;
 		}
 	    }
-	    if (isEmpty = true) {
-		break;
-	    }
-	}
-	return !isEmpty;
+	   
+	
+	return false;
     }
 
     /**

@@ -21,7 +21,8 @@ public class AIPlayer extends Player {
 	public Move chooseMove(ArrayList<Move> moves) {
 		AI ai = new AI();
 		ai.createRatingForTokens(moves);
-		return ai.getMoveByRating(moves);
+		Move move = ai.getMoveByRating(moves);
+		return move;
 	}
 
 }

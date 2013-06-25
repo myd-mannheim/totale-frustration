@@ -24,6 +24,11 @@ public abstract class Player {
 		createTokens(this);
 	}
 
+	private void setEndpoint() {
+	    //endpoint = (startpoint
+	    
+	}
+
 	public abstract Move chooseMove(ArrayList<Move> moves);
 
 	/**

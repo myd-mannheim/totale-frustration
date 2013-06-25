@@ -4,6 +4,7 @@ import hsma.ss2013.oot.groupproject.board.Board;
 import hsma.ss2013.oot.groupproject.board.Field;
 import hsma.ss2013.oot.groupproject.board.Token;
 import hsma.ss2013.oot.groupproject.player.Player;
+
 import java.util.ArrayList;
 
 public class GameRules {
@@ -49,6 +50,8 @@ public class GameRules {
 		} else {
 		    move = new Move(player, currToken, MoveType.SUSPEND);
 		}
+	    } else if (isInHome(currToken)) {
+		move = new Move(player, currToken, MoveType.SUSPEND);// MOVE_IN_HOME);
 	    } else if (isBarrier(diceRoll, player, board, currToken)) {
 		move = new Move(player, currToken, MoveType.SUSPEND);
 	    } else if (isThrowable(diceRoll, player, board, currToken)) {
@@ -56,7 +59,12 @@ public class GameRules {
 	    } else if (isBarrierPossible(diceRoll, player, board, currToken)) {
 		move = new Move(player, currToken, MoveType.BARRIER);
 	    } else if (isFinishPossible(diceRoll, player, board, currToken)) {
-		move = new Move(player, currToken, MoveType.FINISH);
+		if (isHomeBlocked(diceRoll, player, board, currToken)) {
+		    move = new Move(player, currToken, MoveType.SUSPEND);
+		} else {
+		    move = new Move(player, currToken, MoveType.FINISH);
+		}
+
 	    } else {
 		move = new Move(player, currToken, MoveType.MOVE);
 	    }
@@ -64,9 +72,22 @@ public class GameRules {
 		pMoves.add(move);
 	}
 	pMoves = deleteWaste(pMoves);
-
+	
 	return pMoves;
 
+    }
+
+    private boolean isHomeBlocked(int diceRoll, Player player, Board board,
+	    Token currToken) {
+	int remainingMoves = diceRoll - (40 - currToken.getMoves());
+	if (currToken.getMoves() + diceRoll > 40) {
+	    if (remainingMoves < 5) {
+		if (board.field[player.getEndpoint()][remainingMoves].isEmpty()) {
+		    return false;
+		}
+	    }
+	}
+	return true;
     }
 
     private ArrayList<Move> deleteWaste(ArrayList<Move> pMoves) {
@@ -76,14 +97,7 @@ public class GameRules {
 	ArrayList<Move> throwMove = new ArrayList<>(); // Wenn mehrere Würfe
 						       // möglich sind
 	ArrayList<Move> finalMove = new ArrayList<>(); // Finalisierte Liste von
-	// if (LASTMOVE == MoveType.START) { // Zügen ohne Suspends
-	// for (int j = 0; j < pMoves.size(); j++) {
-	// if (pMoves.get(j).getToken().getMoves() == 1) {
-	// singleMove.add(pMoves.get(j));
-	// return singleMove;
-	// }
-	// }
-	// }
+						       // Moves
 
 	for (int i = 0; i < pMoves.size(); i++) {
 	    if (pMoves.get(i).getMoveType() == MoveType.START) {
@@ -109,7 +123,6 @@ public class GameRules {
     }
 
     private boolean isStartBlocked(Player player, Board board) {
-	// Field startField = board.getField(player.startpoint);
 	Field startField = board.getField(player.getStartpoint());
 	if (startField.isBarrier()) {
 	    return true;
@@ -132,6 +145,14 @@ public class GameRules {
 
     private boolean isInHouse(Token currToken) {
 	if (currToken.getPosition() == -1) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    private boolean isInHome(Token currToken) {
+	if (currToken.getMoves() > 40) {
 	    return true;
 	} else {
 	    return false;
@@ -162,7 +183,7 @@ public class GameRules {
 	    Token currToken) {
 	int futurePos = diceRoll + currToken.getPosition();
 	if (futurePos > 39) {
-	    futurePos = futurePos % 39;
+	    futurePos = (futurePos % 40);
 	}
 	if (board.getField(futurePos).getToken().isEmpty()) {
 	    return false;
@@ -192,14 +213,11 @@ public class GameRules {
 	    Token currToken) {
 	int remainingMoves = diceRoll - (40 - currToken.getMoves());
 	if (currToken.getMoves() + diceRoll > 40) {
-	    if (remainingMoves < 4) {
-		System.out.println(player.getEndpoint() + " " + remainingMoves);
-		if (board.getField(player.getEndpoint() + remainingMoves)
-			.isEmpty()) {
+	    if (remainingMoves < 5) {
 		    return true;
 		}
 	    }
-	}
+	
 	return false;
     }
 }
