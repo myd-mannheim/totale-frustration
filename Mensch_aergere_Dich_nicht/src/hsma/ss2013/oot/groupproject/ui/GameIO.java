@@ -118,15 +118,16 @@ public class GameIO {
 	}
 	System.out.print("Welchen Zug moechten Sie durchfuehren?");
 	int chosenMove;
+	int movesSize = moves.size();
 	while (true) {
 	    String move = eingabe.nextLine();
 	    if (isInt(move)) {
 		chosenMove = Integer.parseInt(move);
-		if (chosenMove >= 1 && chosenMove <= 4) {
+		if (chosenMove >= 1 && chosenMove <= movesSize) {
 		    return moves.get(chosenMove - 1);
 		} else {
 		    System.out
-			    .println("Bitte geben Sie eine Zahl zwischen 1 und 4 ein.");
+			    .println("Bitte geben Sie eine Zahl zwischen 1 und " + movesSize + " ein.");
 		}
 	    } else {
 		System.out.println("Bitte geben Sie eine positive Zahl ein.");
