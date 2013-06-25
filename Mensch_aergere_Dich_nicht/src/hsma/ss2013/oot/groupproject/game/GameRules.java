@@ -52,18 +52,18 @@ public class GameRules {
 		}
 	    } else if (isInHome(currToken)) {
 		move = new Move(player, currToken, MoveType.SUSPEND);// MOVE_IN_HOME);
-	    } else if (isBarrier(diceRoll, player, board, currToken)) {
-		move = new Move(player, currToken, MoveType.SUSPEND);
-	    } else if (isThrowable(diceRoll, player, board, currToken)) {
-		move = new Move(player, currToken, MoveType.THROW);
-	    } else if (isBarrierPossible(diceRoll, player, board, currToken)) {
-		move = new Move(player, currToken, MoveType.BARRIER);
 	    } else if (isFinishPossible(diceRoll, player, board, currToken)) {
 		if (isHomeBlocked(diceRoll, player, board, currToken)) {
 		    move = new Move(player, currToken, MoveType.SUSPEND);
 		} else {
 		    move = new Move(player, currToken, MoveType.FINISH);
 		}
+	    } else if (isBarrier(diceRoll, player, board, currToken)) {
+		move = new Move(player, currToken, MoveType.SUSPEND);
+	    } else if (isThrowable(diceRoll, player, board, currToken)) {
+		move = new Move(player, currToken, MoveType.THROW);
+	    } else if (isBarrierPossible(diceRoll, player, board, currToken)) {
+		move = new Move(player, currToken, MoveType.BARRIER);
 
 	    } else {
 		move = new Move(player, currToken, MoveType.MOVE);
@@ -72,7 +72,7 @@ public class GameRules {
 		pMoves.add(move);
 	}
 	pMoves = deleteWaste(pMoves);
-	
+
 	return pMoves;
 
     }
@@ -211,13 +211,10 @@ public class GameRules {
 
     private boolean isFinishPossible(int diceRoll, Player player, Board board,
 	    Token currToken) {
-	int remainingMoves = diceRoll - (40 - currToken.getMoves());
 	if (currToken.getMoves() + diceRoll > 40) {
-	    if (remainingMoves < 5) {
-		    return true;
-		}
-	    }
-	
+	    return true;
+	}
+
 	return false;
     }
 }
