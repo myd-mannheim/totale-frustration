@@ -9,9 +9,9 @@ public class House extends Field {
 	super(index);
 	this.owner = owner;
     }
-    
+
     public Player getOwner() {
-		return this.owner;
-	}
+	return this.owner;
+    }
 
 }
