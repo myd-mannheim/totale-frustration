@@ -33,7 +33,7 @@ public class GameRules {
 
 		Field startField = board.getField(player.getStartpoint());
 
-		if (!startField.getToken().isEmpty() && isBarrier(diceRoll, player, board, startField.getToken()
+		if (/*!startField.getToken().isEmpty() && */isBarrier(diceRoll, player, board, startField.getToken()
 			.get(0))) {
 		    plTokens.addAll(board.getField(
 			    startField.getIndex() + diceRoll).getToken());
@@ -115,6 +115,9 @@ public class GameRules {
 						       // möglich sind
 	ArrayList<Move> finalMove = new ArrayList<>(); // Finalisierte Liste von
 						       // Moves
+	
+	lastMove = null;
+	
 	for (int i = 0; i < pMoves.size(); i++) {
 	    if (pMoves.get(i).getMoveType() == MoveType.START
 		    || pMoves.get(i).getMoveType() == MoveType.START_THROW) {
