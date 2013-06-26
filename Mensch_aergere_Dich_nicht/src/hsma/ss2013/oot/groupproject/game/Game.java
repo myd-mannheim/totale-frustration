@@ -80,8 +80,7 @@ class Game implements MainMenu {
 		try {
 		    play();
 		    playing = false;
-		    System.out.println();
-		    System.out.println("Das Spiel ist beendet! Ein Spieler hat gewonnen.");
+		   
 		} catch (InterruptedException ex) {
 		    System.out.println("Sie haben das Spiel beendet.");
 		}

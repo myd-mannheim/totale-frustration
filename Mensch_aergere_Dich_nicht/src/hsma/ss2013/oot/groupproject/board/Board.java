@@ -266,7 +266,8 @@ public class Board {
 	for (int i = 9; i <= 39; i += 10) {
 	   
 		if ((!field[i][1].isEmpty()) &&(!field[i][2].isEmpty()) &&(!field[i][3].isEmpty()) &&(!field[i][4].isEmpty())) {
-		    
+		    System.out.println();
+		    System.out.println("Spieler: "+ field[i][1].getToken().get(0).getOwner()+" hat gewonnen!");
 		   return true;
 		}
 	    }

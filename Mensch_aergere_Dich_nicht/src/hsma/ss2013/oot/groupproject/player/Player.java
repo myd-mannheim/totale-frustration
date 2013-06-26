@@ -20,13 +20,17 @@ public abstract class Player {
 		this.home = new ArrayList<>();
 		this.myTokens = new ArrayList<>();
 		this.icon = icon;
-		this.name = name;
+		this.name = name +"("+icon+")";
 		createTokens(this);
 	}
 
 	private void setEndpoint() {
 	    //endpoint = (startpoint
 	    
+	}
+	
+	public String toString(){
+	    return name;
 	}
 
 	public abstract Move chooseMove(ArrayList<Move> moves);

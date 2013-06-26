@@ -80,7 +80,7 @@ public class Field {
 	    Token tempToken = iterator.next();
 	    a = a + tempToken.getIcon();
 	    if (iterator.hasNext()) {
-		a = a + ", ";
+		a = a + ",";
 	    }
 	}
 	return a;

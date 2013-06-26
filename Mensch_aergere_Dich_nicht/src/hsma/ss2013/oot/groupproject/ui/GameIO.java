@@ -26,7 +26,7 @@ public class GameIO {
 
 	for (int i = 0; i < 11; i++) {
 	    for (int j = 0; j < 11; j++) {
-		printField[i][j] = "-";
+		printField[i][j] = "  -  ";
 	    }
 	}
 
@@ -37,11 +37,16 @@ public class GameIO {
 
 	    // Falls auf dem Feld keine Figur steht X ausgeben
 	    if (tempField.getToken().size() == 0) {
-		 printField[tempField.getXkoord()][tempField.getyKoord()] = "O";
+		 printField[tempField.getXkoord()][tempField.getyKoord()] = "[   ]";
+	    } else if(tempField.getToken().size() > 1){
+		printField[tempField.getXkoord()][tempField.getyKoord()] = "["
+			+ tempField.tokensToString() + "]";
+		
 	    } else {
 		// Sonst Figuren ausgeben
-		printField[tempField.getXkoord()][tempField.getyKoord()] = ""
-			+ tempField.tokensToString();
+		
+		printField[tempField.getXkoord()][tempField.getyKoord()] = "[ "
+			+ tempField.tokensToString() + " ]";
 	    }
 
 	}
@@ -51,11 +56,11 @@ public class GameIO {
 	    for (int j = 1; j < 5; j++) {
 		House tempField = (House) board.field[i][j];
 		if (tempField.getToken().size() == 0) {
-		     printField[tempField.getXkoord()][tempField.getyKoord()] = "X";
+		     printField[tempField.getXkoord()][tempField.getyKoord()] = "  X  ";
 		} else {
 		    // Sonst Figuren ausgeben
-		    printField[tempField.getXkoord()][tempField.getyKoord()] = ""
-			    + tempField.tokensToString();
+		    printField[tempField.getXkoord()][tempField.getyKoord()] = "  "
+			    + tempField.tokensToString()+"  ";
 		}
 	    }
 	}
