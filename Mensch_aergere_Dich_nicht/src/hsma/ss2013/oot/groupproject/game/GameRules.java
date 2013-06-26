@@ -33,7 +33,7 @@ public class GameRules {
 
 		Field startField = board.getField(player.getStartpoint());
 
-		if (isBarrier(diceRoll, player, board, startField.getToken()
+		if (!startField.getToken().isEmpty() && isBarrier(diceRoll, player, board, startField.getToken()
 			.get(0))) {
 		    plTokens.addAll(board.getField(
 			    startField.getIndex() + diceRoll).getToken());
