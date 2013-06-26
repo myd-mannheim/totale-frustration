@@ -1,6 +1,7 @@
 package hsma.ss2013.oot.groupproject.board;
 
 import hsma.ss2013.oot.groupproject.game.Move;
+import hsma.ss2013.oot.groupproject.game.MoveType;
 import hsma.ss2013.oot.groupproject.player.Player;
 
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class Board {
     public void moveToken(Move move, int diceRoll) {
 	
 	switch (move.getMoveType()) {
-	//TODO
+	// TODO
 	case THROW:
 	    throwToken(move, diceRoll);
 	    break;
@@ -123,12 +124,18 @@ public class Board {
 	case START:
 	    moveToStart(move);
 	    break;
+	case START_THROW:
+	    System.out.println("FEHLER!!!");
+	    moveToStartAndThrow(move);
+	    break;
 	case SUSPEND:
 	    break;
 
 	}
 
     }
+
+    
 
     /**
      * Versetzt eine Figur um die gewürfelten Schritte und schmeißt gegenerische
@@ -157,7 +164,7 @@ public class Board {
 	tokensToThrow.remove(targetToken);
 	targetToken.setMovesToNull();
 	targetToken.getOwner().moveIntoStart(targetToken);
-	
+
 	// Schlagende Figur aufs Spielfeld setzen und Schrittecounter erhöhen
 	simpleMoveToken(move, diceRoll);
     }
@@ -197,7 +204,7 @@ public class Board {
      * @param move
      *            - MoveObject das Informationen zum Zug trägt
      */
-    private void buildBarrier(Move move, int diceRoll) {	
+    private void buildBarrier(Move move, int diceRoll) {
 	simpleMoveToken(move, diceRoll);
     }
 
@@ -209,13 +216,13 @@ public class Board {
      */
     private void simpleMoveToken(Move move, int diceRoll) {
 	int tokenPosition = move.getToken().getPosition();
-	
+
 	ArrayList<Token> tokens = getField(tokenPosition).getToken();
 
 	Token tokenToMove = tokens.get(findToken(tokens, move.getToken()));
 
 	tokens.remove(findToken(tokens, move.getToken()));
-	
+
 	getField(tokenPosition).toggleBarrier();
 	int destiny = 0;
 	// WENN ÜBER 39 GEZOGEN WIRD MUSS ZURÜCK AUF 1 gegangen werden
@@ -251,9 +258,30 @@ public class Board {
 	ArrayList<Token> tokenHome = move.getOwner().getHome();
 	Token tokenToMove = tokenHome.get(0);
 	tokenHome.remove(0);
+	/*if (!startField.getToken().isEmpty()) {
+	    startField.getToken().get(0).setMovesToNull();
+	    startField.getToken().get(0).moveTo(-1);
+	    startField.setToken(tokenToMove);
+	    
+	} else {
+	    startField.setToken(tokenToMove);
+	}*/
 	startField.setToken(tokenToMove);
 	tokenToMove.moves++;
 	tokenToMove.moveTo(startField.getIndex());
+    }
+    
+    private void moveToStartAndThrow(Move move) {
+	Field startField = this.getField(move.getOwner().getStartpoint());
+	Token tokenToThrow = startField.getToken().get(0);
+	//Move throwMove = new Move(tokenToThrow.getOwner(), tokenToThrow, MoveType.THROW);
+	tokenToThrow.moveTo(-1);
+	startField.getToken().remove(tokenToThrow);
+	tokenToThrow.setMovesToNull();
+	tokenToThrow.getOwner().moveIntoStart(tokenToThrow);
+	
+	this.moveToStart(move);
+	
     }
 
     /**
@@ -262,17 +290,19 @@ public class Board {
      * @return
      */
     public boolean isFullHouse() {
-	
+
 	for (int i = 9; i <= 39; i += 10) {
-	   
-		if ((!field[i][1].isEmpty()) &&(!field[i][2].isEmpty()) &&(!field[i][3].isEmpty()) &&(!field[i][4].isEmpty())) {
-		    System.out.println();
-		    System.out.println("Spieler: "+ field[i][1].getToken().get(0).getOwner()+" hat gewonnen!");
-		   return true;
-		}
+
+	    if ((!field[i][1].isEmpty()) && (!field[i][2].isEmpty())
+		    && (!field[i][3].isEmpty()) && (!field[i][4].isEmpty())) {
+		System.out.println();
+		System.out.println("Spieler: "
+			+ field[i][1].getToken().get(0).getOwner()
+			+ " hat gewonnen!");
+		return true;
 	    }
-	   
-	
+	}
+
 	return false;
     }
 

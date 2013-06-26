@@ -23,11 +23,6 @@ public abstract class Player {
 		this.name = name +"("+icon+")";
 		createTokens(this);
 	}
-
-	private void setEndpoint() {
-	    //endpoint = (startpoint
-	    
-	}
 	
 	public String toString(){
 	    return name;

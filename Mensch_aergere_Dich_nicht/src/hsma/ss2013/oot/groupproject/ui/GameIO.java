@@ -117,6 +117,7 @@ public class GameIO {
 		System.out.println("gerueckt werden");
 		break;
 	    case START:
+	    case START_THROW:
 		System.out.println("aufs Startfeld gesetzt werden");
 		break;
 	    }

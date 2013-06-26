@@ -76,6 +76,7 @@ public class AI {
 						this.rating[tokenCount][1] = true;
 						break;
 					case START:
+					case START_THROW:
 						this.rating[tokenCount][2] = true;
 						break;
 					case MOVE:
@@ -111,6 +112,7 @@ public class AI {
 							moveTypeDefaultOrder[i]);
 			}
 		}
+		System.out.println("FEHLER 1 !!!!!");
 		return null;// should not happen at any time
 	}
 
@@ -131,6 +133,7 @@ public class AI {
 				return moves.get(i);
 			}
 		}
+		System.out.println("FEHLER 2 !!!!!");
 		return null;// should not happen at any time
 	}
 }

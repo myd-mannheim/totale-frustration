@@ -28,8 +28,22 @@ public class GameRules {
 	// Token
 	// aus der Liste entfernt
 	if (lastMove != null) {
-	    plTokens.add(lastMove.getToken());
-	    lastMove = null;
+	    if (lastMove.getMoveType() == MoveType.START
+		    || lastMove.getMoveType() == MoveType.START_THROW) {
+
+		Field startField = board.getField(player.getStartpoint());
+
+		if (isBarrier(diceRoll, player, board, startField.getToken()
+			.get(0))) {
+		    plTokens.addAll(board.getField(
+			    startField.getIndex() + diceRoll).getToken());
+		} else {
+		    plTokens.add(startField.getToken().get(0));
+		    lastMove = null;
+		}
+
+		// plTokens.add(lastMove.getToken());
+	    }
 	} else {
 	    plTokens.addAll(player.getTokens());
 	}
@@ -46,12 +60,16 @@ public class GameRules {
 		if (isStartable(diceRoll)) {
 		    if (!isStartBlocked(player, board)) {
 			move = new Move(player, currToken, MoveType.START);
+		    } else if (!isBlockedByMe(player, board)) {
+			move = new Move(player, currToken, MoveType.START_THROW);
+		    } else {
+			move = new Move(player, currToken, MoveType.SUSPEND);
 		    }
 		} else {
 		    move = new Move(player, currToken, MoveType.SUSPEND);
 		}
 	    } else if (isInHome(currToken)) {
-		move = new Move(player, currToken, MoveType.SUSPEND);// MOVE_IN_HOME);
+		move = new Move(player, currToken, MoveType.SUSPEND);
 	    } else if (isFinishPossible(diceRoll, player, board, currToken)) {
 		if (isHomeBlocked(diceRoll, player, board, currToken)) {
 		    move = new Move(player, currToken, MoveType.SUSPEND);
@@ -64,7 +82,6 @@ public class GameRules {
 		move = new Move(player, currToken, MoveType.THROW);
 	    } else if (isBarrierPossible(diceRoll, player, board, currToken)) {
 		move = new Move(player, currToken, MoveType.BARRIER);
-
 	    } else {
 		move = new Move(player, currToken, MoveType.MOVE);
 	    }
@@ -98,9 +115,9 @@ public class GameRules {
 						       // möglich sind
 	ArrayList<Move> finalMove = new ArrayList<>(); // Finalisierte Liste von
 						       // Moves
-
 	for (int i = 0; i < pMoves.size(); i++) {
-	    if (pMoves.get(i).getMoveType() == MoveType.START) {
+	    if (pMoves.get(i).getMoveType() == MoveType.START
+		    || pMoves.get(i).getMoveType() == MoveType.START_THROW) {
 		singleMove.add(pMoves.get(i));
 		lastMove = singleMove.get(0);
 		return singleMove;
@@ -126,13 +143,23 @@ public class GameRules {
 	Field startField = board.getField(player.getStartpoint());
 	if (startField.isBarrier()) {
 	    return true;
-	} else if (startField.getToken().size() == 0) {
-	    return false;
-	} else if (startField.getToken().get(0).getOwner() == player) {
+	} else if (!startField.getToken().isEmpty()) {
 	    return true;
+	    // } else if (!startField.getToken().isEmpty() &&
+	    // startField.getToken().get(0).getOwner() == player) {
+	    // return true;
 	}
 	return false;
 
+    }
+
+    private boolean isBlockedByMe(Player player, Board board) {
+	Field startField = board.getField(player.getStartpoint());
+	if (!startField.getToken().isEmpty()
+		&& startField.getToken().get(0).getOwner() == player) {
+	    return true;
+	}
+	return false;
     }
 
     private boolean isStartable(int diceRoll) {
