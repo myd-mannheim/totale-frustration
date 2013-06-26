@@ -1,6 +1,6 @@
 package hsma.ss2013.oot.groupproject.board;
 
-public class Dice implements DiceAccess{
+public class Dice implements DiceAccess {
     private static Dice dice = new Dice(6);
     private int sides;
 
